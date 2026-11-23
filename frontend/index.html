@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>360° Radar Mobile Tracker — Engineering Workbench</title>
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=13">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -31,88 +31,7 @@
       </div>
 
       <div class="header-right">
-        <!-- New Setting Tag: Settings Button -->
-        <button id="btnSettings" class="btn-bench" title="Open Settings (Range Scale, Display Layers, Zone Thresholds)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path
-              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-            </path>
-          </svg>
-          SETTINGS
-        </button>
-
-        <!-- Dropdown Popover Panel anchored below the Settings button -->
-        <div id="settingsPopover" class="settings-popover">
-          <div class="settings-popover-header">
-            <div class="settings-popover-title">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-                </path>
-              </svg>
-              SYSTEM SETTINGS
-            </div>
-            <button id="btnCloseSettings" class="btn-popover-close" title="Close Settings">&times;</button>
-          </div>
-
-          <div class="settings-popover-body">
-            <!-- 1. RANGE SCALE -->
-            <div class="setting-group">
-              <span class="setting-label">RANGE SCALE</span>
-              <div class="segmented-control">
-                <button id="btnRange5m" class="btn-seg">5M</button>
-                <button id="btnRange10m" class="btn-seg active">10M</button>
-                <button id="btnRange15m" class="btn-seg">15M</button>
-              </div>
-            </div>
-
-            <!-- 2. DISPLAY LAYERS -->
-            <div class="setting-group">
-              <span class="setting-label">DISPLAY LAYERS</span>
-              <div class="segmented-control">
-                <button id="btnToolFov" class="btn-seg active" title="Toggle ±65° FoV Sectors">±65° FOV</button>
-                <button id="btnToolVel" class="btn-seg active" title="Toggle Velocity Vectors">VECTORS</button>
-                <button id="btnToolBounds" class="btn-seg active" title="Toggle Sector Boundaries">BOUNDARIES</button>
-              </div>
-            </div>
-
-            <!-- 3. ZONE THRESHOLDS (Direct number entry, no slide bar) -->
-            <div class="setting-group">
-              <div class="setting-header-row">
-                <span class="setting-label">ZONE THRESHOLDS</span>
-                <div class="zone-actions">
-                  <button id="btnResetZones" class="btn-zone-action"
-                    title="Reset to default thresholds (2.0m / 4.0m)">RESET</button>
-                  <button id="btnApplyZones" class="btn-zone-action apply"
-                    title="Apply thresholds to system">APPLY</button>
-                </div>
-              </div>
-
-              <!-- Danger Zone Numeric Input (#FF4545) -->
-              <div class="zone-number-row">
-                <span class="zone-tag-mini danger">DANGER</span>
-                <div class="number-input-wrapper">
-                  <input type="number" id="inputDangerZone" min="0.1" max="15.0" step="0.1" value="2.0"
-                    class="zone-num-input danger" placeholder="2.0">
-                  <span class="unit-suffix">m</span>
-                </div>
-              </div>
-
-              <!-- Warm Zone Numeric Input (#FFB52E) -->
-              <div class="zone-number-row">
-                <span class="zone-tag-mini warm">WARM</span>
-                <div class="number-input-wrapper">
-                  <input type="number" id="inputWarmZone" min="0.2" max="15.0" step="0.1" value="4.0"
-                    class="zone-num-input warm" placeholder="4.0">
-                  <span class="unit-suffix">m</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <!-- Dark / White Theme Toggle Button -->
         <button id="btnThemeToggle" class="btn-bench" title="Toggle Dark/White Mode">
           <svg id="themeIconSun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2">
@@ -133,255 +52,931 @@
           <span id="themeToggleText">WHITE MODE</span>
         </button>
 
-        <button id="btnConfig" class="btn-bench">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path
-              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-            </path>
-          </svg>
-          SENSOR CONFIG
-        </button>
+        <div class="hairline-divider"></div>
 
-        <button id="btnLogs" class="btn-bench">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-          </svg>
-          EVENT LOGS
-        </button>
+        <!-- Live Header Clock -->
+        <div id="headerClockDisplay" class="mono"
+          style="font-size: 11px; color: var(--text-secondary); padding: 4px 8px; background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs);">
+          --:--:--
+        </div>
       </div>
     </header>
 
-    <!-- Main Docked Split View (Left 280px | Center Flex | Right 340px) -->
-    <main class="workbench-main">
+    <!-- Main Workbench Body: 155px Nav Sidebar + 6 Unified Views -->
+    <div class="workbench-body">
 
-      <!-- Left Panel: Radar Sensors & Diagnostics (280px) -->
-      <aside class="panel-left">
-        <div class="panel-bar">
-          <span class="panel-title">RADAR SENSORS</span>
-          <span id="activeSensorSummary" class="panel-meta">0/3 ACTIVE</span>
+      <!-- LEFT NAVIGATION SIDEBAR (155px) -->
+      <nav class="nav-sidebar">
+        <div>
+          <div class="mono"
+            style="font-size: 9px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; padding: 4px 8px; margin-bottom: 4px;">
+            WORKBENCH VIEWS</div>
+
+          <!-- 1. Live Monitor -->
+          <button id="nav-live-monitor" class="nav-btn active" data-view="live-monitor">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="4" />
+              <line x1="12" y1="3" x2="12" y2="21" />
+            </svg>
+            <span>Live Monitor</span>
+          </button>
+
+          <!-- 2. Radar Config -->
+          <button id="nav-radar-config" class="nav-btn" data-view="radar-config">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M10.3 21a1.9 1.9 0 0 0 3.4 0l1.2-2.3a8 8 0 0 0 2.3-1.3l2.5.6a1.9 1.9 0 0 0 2.2-1.3l.8-2.5a8 8 0 0 0 0-2.6l-.8-2.5a1.9 1.9 0 0 0-2.2-1.3l-2.5.6a8 8 0 0 0-2.3-1.3L13.7 3a1.9 1.9 0 0 0-3.4 0L9.1 5.3a8 8 0 0 0-2.3 1.3l-2.5-.6a1.9 1.9 0 0 0-2.2 1.3L1.3 9.8a8 8 0 0 0 0 2.6l.8 2.5a1.9 1.9 0 0 0 2.2 1.3l2.5-.6a8 8 0 0 0 2.3 1.3L10.3 21z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span>Radar Config</span>
+          </button>
+
+          <!-- 3. Sensor Config -->
+          <button id="nav-sensor-config" class="nav-btn" data-view="sensor-config">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="1" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
+            <span>Sensor Config</span>
+          </button>
+
+          <!-- 4. Object Tracking -->
+          <button id="nav-object-tracking" class="nav-btn" data-view="object-tracking">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="3" />
+              <line x1="12" y1="2" x2="12" y2="6" />
+              <line x1="12" y1="18" x2="12" y2="22" />
+            </svg>
+            <span>Object Tracking</span>
+          </button>
+
+          <!-- 5. Zone Settings -->
+          <button id="nav-zone-settings" class="nav-btn" data-view="zone-settings">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9" stroke-dasharray="2 2" />
+              <circle cx="12" cy="12" r="5" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+            </svg>
+            <span>Zone Settings</span>
+          </button>
+
+          <!-- 6. Event Logs -->
+          <button id="nav-event-logs" class="nav-btn" data-view="event-logs">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            <span>Event Logs</span>
+          </button>
         </div>
 
-        <!-- Edge-to-Edge Flat Radar Sensor Rows -->
-        <div class="radar-list">
-          <!-- Sensor 1 (0°–120° / Electric Cyan) -->
-          <div id="sensorCard1" class="radar-row sensor-row-r1">
-            <div class="radar-row-line">
+        <!-- Sidebar Telemetry Footer -->
+        <div class="nav-sidebar-footer">
+          <div class="nav-stat-row">
+            <span>STREAM:</span>
+            <span style="color: var(--accent-active); font-weight: 700;">ACTIVE</span>
+          </div>
+          <div class="nav-stat-row">
+            <span>FPS:</span>
+            <span style="color: var(--accent-cyan); font-weight: 700;">25.0</span>
+          </div>
+          <div class="nav-stat-row">
+            <span>LATENCY:</span>
+            <span id="sidebarLatencyVal" style="color: var(--text-primary); font-weight: 700;">18 ms</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 1: LIVE MONITOR (Merged With Production Workbench) -->
+      <!-- ===================================================================== -->
+      <section id="view-live-monitor" class="view-container active">
+        <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
+
+          <!-- Center Canvas Viewport & Data Flow Inspector -->
+          <div
+            style="flex: 1; display: flex; flex-direction: column; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 8px; gap: 8px; min-width: 0;">
+
+            <!-- Radar Selection Tabs (Confirm Data Flow per Radar) -->
+            <div class="radar-tab-bar">
+              <button id="tabRadarAll" class="btn-radar-tab active" data-tab="all">
+                <span class="tab-indicator-dot dot-all"></span>
+                ALL RADARS (360° FUSED)
+              </button>
+              <button id="tabRadar1" class="btn-radar-tab" data-tab="1">
+                <span id="tabDot1" class="tab-indicator-dot" style="background-color: #00E5FF;"></span>
+                RADAR 1 (0°–120°)
+              </button>
+              <button id="tabRadar2" class="btn-radar-tab" data-tab="2">
+                <span id="tabDot2" class="tab-indicator-dot" style="background-color: #B56CFF;"></span>
+                RADAR 2 (120°–240°)
+              </button>
+              <button id="tabRadar3" class="btn-radar-tab" data-tab="3">
+                <span id="tabDot3" class="tab-indicator-dot" style="background-color: #FFB52E;"></span>
+                RADAR 3 (240°–360°)
+              </button>
+            </div>
+
+            <!-- Live Serial Data Flow Confirmation Inspector -->
+            <div id="dataFlowBar" class="data-flow-bar">
+              <div class="flow-item">
+                <span class="flow-label">STREAM:</span>
+                <span id="flowRadarName" class="flow-val highlight">ALL 3 RADARS FUSED</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">FLOW:</span>
+                <span id="flowStatusBadge" class="flow-badge status-offline">STANDBY</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">RX RATE:</span>
+                <span id="flowRxRate" class="flow-val">0.0 kB/s</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">FPS:</span>
+                <span id="flowFps" class="flow-val">0.0 FPS</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">FRAMES:</span>
+                <span id="flowFrames" class="flow-val">#0</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">BYTES:</span>
+                <span id="flowBytes" class="flow-val">0 KB</span>
+              </div>
+              <div class="flow-divider"></div>
+              <div class="flow-item">
+                <span class="flow-label">LIVE DATA:</span>
+                <span id="flowCounts" class="flow-val">0 pts / 0 trks</span>
+              </div>
+            </div>
+
+            <!-- Central 360° Circular Polar Plot Canvas -->
+            <div class="canvas-viewport" style="flex: 1; position: relative;">
+              <canvas id="radarCanvas"></canvas>
+
+              <!-- Cockpit Legend (Docked Top-Right) -->
+              <div class="cockpit-legend">
+                <div class="legend-header">360° SENSOR FUSION</div>
+                <div class="legend-row">
+                  <span class="legend-dot" style="background:#00E5FF; box-shadow:0 0 6px #00E5FF;"></span>
+                  <span class="legend-text">RADAR 1 (0°–120°)</span>
+                </div>
+                <div class="legend-row">
+                  <span class="legend-dot" style="background:#B56CFF; box-shadow:0 0 6px #B56CFF;"></span>
+                  <span class="legend-text">RADAR 2 (120°–240°)</span>
+                </div>
+                <div class="legend-row">
+                  <span class="legend-dot" style="background:#FFB52E; box-shadow:0 0 6px #FFB52E;"></span>
+                  <span class="legend-text">RADAR 3 (240°–360°)</span>
+                </div>
+                <div class="legend-divider"></div>
+                <div class="legend-row">
+                  <span class="legend-marker marker-static">■</span>
+                  <span class="legend-text">STATIC OBJECT</span>
+                </div>
+                <div class="legend-row">
+                  <span class="legend-marker marker-dynamic">●</span>
+                  <span class="legend-text">DYNAMIC OBJECT</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Center Execution Controls -->
+            <div class="bottom-control-bar">
+              <button id="btnStartRadarsLive" class="btn-ctrl-start" title="Start and connect all 3 radars">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                START RADAR
+              </button>
+              <button id="btnStopRadarsLive" class="btn-ctrl-stop" title="Stop and disconnect all radars">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="6" y="6" width="12" height="12" />
+                </svg>
+                STOP RADAR
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Sidebar: Detection Summary + Radar Sensors List -->
+          <div style="width: 310px; display: flex; flex-direction: column; gap: 8px; shrink: 0;">
+
+            <!-- 1. Detection Summary Card -->
+            <div class="detection-summary-card">
+              <div class="mono"
+                style="font-size: 10px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase;">
+                DETECTION SUMMARY</div>
+              <div class="summary-metric-grid">
+                <div class="summary-metric-tile">
+                  <span class="tile-label">TOTAL OBJECTS</span>
+                  <span id="summaryTotalObjects" class="tile-val" style="color: var(--accent-cyan);">0</span>
+                </div>
+                <div class="summary-metric-tile">
+                  <span class="tile-label">DYNAMIC</span>
+                  <span id="summaryDynamicObjects" class="tile-val" style="color: var(--accent-active);">0</span>
+                </div>
+                <div class="summary-metric-tile">
+                  <span class="tile-label">STATIC</span>
+                  <span id="summaryStaticObjects" class="tile-val">0</span>
+                </div>
+                <div class="summary-metric-tile danger-highlight">
+                  <span class="tile-label" style="color: var(--accent-danger); font-weight: 700;">CLOSEST</span>
+                  <span id="summaryClosestObject" class="tile-val" style="font-size: 15px;">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Radar Sensors Status & Individual Controls -->
+            <div
+              style="background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+              <div class="panel-bar">
+                <span class="panel-title">RADAR SENSORS</span>
+                <span id="activeSensorSummary" class="panel-meta">0/3 ACTIVE</span>
+              </div>
+
+              <!-- Edge-to-Edge Flat Radar Sensor Rows -->
+              <div class="radar-list">
+                <!-- Sensor 1 (0°–120° / Electric Cyan) -->
+                <div id="sensorCard1" class="radar-row sensor-row-r1">
+                  <div class="radar-row-line">
+                    <div>
+                      <span class="radar-id-text radar-color-r1">RADAR 1</span>
+                      <span class="radar-orient-tag">0°–120°</span>
+                    </div>
+                    <div id="sensorBadge1" class="radar-status-indicator">
+                      <span class="status-dot-6px"></span>
+                      <span class="status-text">OFFLINE</span>
+                    </div>
+                  </div>
+                  <div class="radar-row-line">
+                    <span class="radar-target-counter">TARGETS: <span id="sensorTargets1">0</span></span>
+                    <label class="switch-flat" title="Toggle Sensor Data Stream">
+                      <input type="checkbox" id="sensorToggle1" checked>
+                      <span class="slider-flat"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Sensor 2 (120°–240° / Bright Violet) -->
+                <div id="sensorCard2" class="radar-row sensor-row-r2">
+                  <div class="radar-row-line">
+                    <div>
+                      <span class="radar-id-text radar-color-r2">RADAR 2</span>
+                      <span class="radar-orient-tag">120°–240°</span>
+                    </div>
+                    <div id="sensorBadge2" class="radar-status-indicator">
+                      <span class="status-dot-6px"></span>
+                      <span class="status-text">OFFLINE</span>
+                    </div>
+                  </div>
+                  <div class="radar-row-line">
+                    <span class="radar-target-counter">TARGETS: <span id="sensorTargets2">0</span></span>
+                    <label class="switch-flat" title="Toggle Sensor Data Stream">
+                      <input type="checkbox" id="sensorToggle2" checked>
+                      <span class="slider-flat"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Sensor 3 (240°–360° / Bright Amber) -->
+                <div id="sensorCard3" class="radar-row sensor-row-r3">
+                  <div class="radar-row-line">
+                    <div>
+                      <span class="radar-id-text radar-color-r3">RADAR 3</span>
+                      <span class="radar-orient-tag">240°–360°</span>
+                    </div>
+                    <div id="sensorBadge3" class="radar-status-indicator">
+                      <span class="status-dot-6px"></span>
+                      <span class="status-text">OFFLINE</span>
+                    </div>
+                  </div>
+                  <div class="radar-row-line">
+                    <span class="radar-target-counter">TARGETS: <span id="sensorTargets3">0</span></span>
+                    <label class="switch-flat" title="Toggle Sensor Data Stream">
+                      <input type="checkbox" id="sensorToggle3" checked>
+                      <span class="slider-flat"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lower Diagnostics & Mini Terminal -->
+              <div class="panel-diagnostics">
+                <div class="diag-section">
+                  <span class="diag-label">FUSION TELEMETRY</span>
+                  <div class="diag-grid">
+                    <div>RATE: <span id="diagFrameRate">0 FPS</span></div>
+                    <div>LATENCY: <span id="diagLatency">0 ms</span></div>
+                    <div>POINTS: <span id="diagPointCount">0</span></div>
+                    <div>TRACKS: <span id="diagTrackCount">0</span></div>
+                  </div>
+                </div>
+
+                <div class="diag-section" style="border-bottom:none; padding-bottom:4px;">
+                  <span class="diag-label">SYSTEM LOGS</span>
+                </div>
+                <div id="miniTerminalLog" class="mini-terminal">[INIT] Precision workbench ready.
+                  [HARDWARE] 3x IWR6843AOP stack standby.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 2: RADAR CONFIGURATION (With 'Apply to All 3 Radars') -->
+      <!-- ===================================================================== -->
+      <section id="view-radar-config" class="view-container">
+        <!-- Radar Sub-Tab Selector -->
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-hairline); padding-bottom: 8px;">
+          <div style="display: flex; gap: 6px;">
+            <!-- 1. NEW 'Apply to All 3 Radars' Sub-Tab -->
+            <button id="btnSubRadarAll" class="btn-bench active" style="font-weight: 700;" data-subtab="all">
+              ALL RADARS (APPLY TO ALL 3)
+            </button>
+            <button id="btnSubRadar1" class="btn-bench" data-subtab="1">RADAR 1 (0°–120°)</button>
+            <button id="btnSubRadar2" class="btn-bench" data-subtab="2">RADAR 2 (120°–240°)</button>
+            <button id="btnSubRadar3" class="btn-bench" data-subtab="3">RADAR 3 (240°–360°)</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="chkSyncAllRadars" checked style="accent-color: var(--accent-cyan);">
+            <label for="chkSyncAllRadars" class="mono"
+              style="font-size: 11px; color: var(--text-secondary); cursor: pointer;">Lock & Broadcast Configuration to
+              All 3 Sensors</label>
+          </div>
+        </div>
+
+        <!-- A. ALL RADARS BROADCAST INTERFACE -->
+        <div id="panelRadarConfigAll" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+
+          <!-- Broadcast Status Banner -->
+          <div class="broadcast-banner">
+            <div>
+              <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">SYNCHRONOUS
+                MULTI-SENSOR BROADCAST PIPELINE</span>
+              <p style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">Baud rates, serial port scans,
+                and chirp configuration profiles (.cfg) will be transmitted simultaneously across all 3 physical radar
+                ports.</p>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button id="btnBroadcastScan" class="btn-bench">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                SCAN ALL PORTS
+              </button>
+              <button id="btnBroadcastConnect" class="btn-bench"
+                style="color: var(--accent-active); border-color: var(--accent-active); font-weight: 700;">
+                CONNECT ALL 3
+              </button>
+              <button id="btnBroadcastDisconnect" class="btn-bench"
+                style="color: var(--accent-danger); border-color: var(--accent-danger);">
+                DISCONNECT ALL
+              </button>
+            </div>
+          </div>
+
+          <!-- 3-Sensor State Grid -->
+          <div class="radar-tri-grid" style="flex: 1;">
+            <!-- Sensor 1 Card -->
+            <div class="radar-state-card">
               <div>
-                <span class="radar-id-text radar-color-r1">RADAR 1</span>
-                <span class="radar-orient-tag">0°–120°</span>
+                <div class="radar-state-card-header">
+                  <span class="mono radar-color-r1" style="font-weight: 700;">RADAR 1 (0°–120°)</span>
+                  <span id="bcastStatus1" class="mono"
+                    style="font-size: 9px; color: var(--accent-danger); font-weight: 700;">OFFLINE</span>
+                </div>
+                <div class="mono"
+                  style="font-size: 11px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+                  <div style="display: flex; justify-content: space-between;"><span>CLI Port:</span><span
+                      id="bcastCliPort1" style="color: var(--text-primary);">/dev/ttyUSB0</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Data Port:</span><span
+                      id="bcastDataPort1" style="color: var(--text-primary);">/dev/ttyUSB1</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Active CFG:</span><span
+                      id="bcastCfgFile1" style="color: var(--color-r1);">AOP_6m_default.cfg</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>RX Flow:</span><span
+                      id="bcastRxFlow1" style="color: var(--text-muted);">0.0 kB/s</span></div>
+                </div>
               </div>
-              <div id="sensorBadge1" class="radar-status-indicator">
-                <span class="status-dot-6px"></span>
-                <span class="status-text">OFFLINE</span>
-              </div>
+              <div class="mono"
+                style="border-top: 1px solid var(--border-hairline); padding-top: 6px; font-size: 10px; color: var(--text-muted);">
+                Sensor 1 Sector: 0.0° Facing North</div>
             </div>
-            <div class="radar-row-line">
-              <span class="radar-target-counter">TARGETS: <span id="sensorTargets1">0</span></span>
-              <label class="switch-flat" title="Toggle Sensor Blind Spot">
-                <input type="checkbox" id="sensorToggle1" checked>
-                <span class="slider-flat"></span>
-              </label>
-            </div>
-          </div>
 
-          <!-- Sensor 2 (120°–240° / Bright Violet) -->
-          <div id="sensorCard2" class="radar-row sensor-row-r2">
-            <div class="radar-row-line">
+            <!-- Sensor 2 Card -->
+            <div class="radar-state-card">
               <div>
-                <span class="radar-id-text radar-color-r2">RADAR 2</span>
-                <span class="radar-orient-tag">120°–240°</span>
+                <div class="radar-state-card-header">
+                  <span class="mono radar-color-r2" style="font-weight: 700;">RADAR 2 (120°–240°)</span>
+                  <span id="bcastStatus2" class="mono"
+                    style="font-size: 9px; color: var(--accent-danger); font-weight: 700;">OFFLINE</span>
+                </div>
+                <div class="mono"
+                  style="font-size: 11px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+                  <div style="display: flex; justify-content: space-between;"><span>CLI Port:</span><span
+                      id="bcastCliPort2" style="color: var(--text-primary);">/dev/ttyUSB2</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Data Port:</span><span
+                      id="bcastDataPort2" style="color: var(--text-primary);">/dev/ttyUSB3</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Active CFG:</span><span
+                      id="bcastCfgFile2" style="color: var(--color-r2);">AOP_6m_default.cfg</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>RX Flow:</span><span
+                      id="bcastRxFlow2" style="color: var(--text-muted);">0.0 kB/s</span></div>
+                </div>
               </div>
-              <div id="sensorBadge2" class="radar-status-indicator">
-                <span class="status-dot-6px"></span>
-                <span class="status-text">OFFLINE</span>
-              </div>
+              <div class="mono"
+                style="border-top: 1px solid var(--border-hairline); padding-top: 6px; font-size: 10px; color: var(--text-muted);">
+                Sensor 2 Sector: 120.0° Facing South-East</div>
             </div>
-            <div class="radar-row-line">
-              <span class="radar-target-counter">TARGETS: <span id="sensorTargets2">0</span></span>
-              <label class="switch-flat" title="Toggle Sensor Blind Spot">
-                <input type="checkbox" id="sensorToggle2" checked>
-                <span class="slider-flat"></span>
-              </label>
-            </div>
-          </div>
 
-          <!-- Sensor 3 (240°–360° / Bright Amber) -->
-          <div id="sensorCard3" class="radar-row sensor-row-r3">
-            <div class="radar-row-line">
+            <!-- Sensor 3 Card -->
+            <div class="radar-state-card">
               <div>
-                <span class="radar-id-text radar-color-r3">RADAR 3</span>
-                <span class="radar-orient-tag">240°–360°</span>
+                <div class="radar-state-card-header">
+                  <span class="mono radar-color-r3" style="font-weight: 700;">RADAR 3 (240°–360°)</span>
+                  <span id="bcastStatus3" class="mono"
+                    style="font-size: 9px; color: var(--accent-danger); font-weight: 700;">OFFLINE</span>
+                </div>
+                <div class="mono"
+                  style="font-size: 11px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+                  <div style="display: flex; justify-content: space-between;"><span>CLI Port:</span><span
+                      id="bcastCliPort3" style="color: var(--text-primary);">/dev/ttyUSB4</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Data Port:</span><span
+                      id="bcastDataPort3" style="color: var(--text-primary);">/dev/ttyUSB5</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>Active CFG:</span><span
+                      id="bcastCfgFile3" style="color: var(--color-r3);">AOP_6m_default.cfg</span></div>
+                  <div style="display: flex; justify-content: space-between;"><span>RX Flow:</span><span
+                      id="bcastRxFlow3" style="color: var(--text-muted);">0.0 kB/s</span></div>
+                </div>
               </div>
-              <div id="sensorBadge3" class="radar-status-indicator">
-                <span class="status-dot-6px"></span>
-                <span class="status-text">OFFLINE</span>
+              <div class="mono"
+                style="border-top: 1px solid var(--border-hairline); padding-top: 6px; font-size: 10px; color: var(--text-muted);">
+                Sensor 3 Sector: 240.0° Facing South-West</div>
+            </div>
+          </div>
+
+          <!-- Configuration Profile Broadcast Action Bar -->
+          <div
+            style="background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <span class="mono"
+              style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">BROADCAST
+              CONFIGURATION PROFILE (.CFG) TO ALL 3 SENSORS</span>
+            <div style="display: flex; gap: 8px;">
+              <select id="bcastCfgSelect" class="bench-select mono" style="flex: 1;">
+                <option value="AOP_6m_default.cfg">AOP_6m_default.cfg (TI Standard 6m Chirp Profile)</option>
+              </select>
+              <button id="btnBroadcastCfg" class="btn-bench active" style="font-weight: 700;">
+                BROADCAST CFG TO ALL 3 RADARS
+              </button>
+            </div>
+            <div class="mono"
+              style="display: flex; justify-content: space-between; font-size: 10.5px; color: var(--text-muted); border-top: 1px solid var(--border-hairline); padding-top: 6px;">
+              <span id="bcastAckStatus">Ready to dispatch configuration commands in parallel.</span>
+              <div style="display: flex; gap: 6px;">
+                <button id="btnBroadcastStart" class="btn-bench"
+                  style="height: 22px; color: var(--accent-active);">Start All 3</button>
+                <button id="btnBroadcastStop" class="btn-bench" style="height: 22px; color: var(--accent-danger);">Stop
+                  All 3</button>
               </div>
             </div>
-            <div class="radar-row-line">
-              <span class="radar-target-counter">TARGETS: <span id="sensorTargets3">0</span></span>
-              <label class="switch-flat" title="Toggle Sensor Blind Spot">
-                <input type="checkbox" id="sensorToggle3" checked>
-                <span class="slider-flat"></span>
-              </label>
+          </div>
+
+        </div>
+
+        <!-- B. INDIVIDUAL RADAR CONFIG SUB-VIEW -->
+        <div id="panelRadarConfigIndiv" style="display: none; gap: 10px; flex: 1;">
+          <div
+            style="width: 320px; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <span id="indivRadarTitle" class="mono"
+              style="font-size: 11px; font-weight: 700; color: var(--text-primary);">RADAR 1 CONFIGURATION</span>
+            <div class="bench-field">
+              <label class="bench-label">CLI Control Port (115200)</label>
+              <select id="indivCliSelect" class="bench-select mono">
+                <option value="">-- Select CLI Port --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Data Stream Port (921600)</label>
+              <select id="indivDataSelect" class="bench-select mono">
+                <option value="">-- Select Data Port --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Configuration File</label>
+              <select id="indivCfgSelect" class="bench-select mono">
+                <option value="AOP_6m_default.cfg">AOP_6m_default.cfg</option>
+              </select>
+            </div>
+            <div style="margin-top: auto; display: flex; gap: 6px;">
+              <button id="btnIndivConnect" class="btn-bench active"
+                style="flex: 1; justify-content: center;">Connect</button>
+              <button id="btnIndivDisconnect" class="btn-bench"
+                style="flex: 1; justify-content: center; color: var(--accent-danger);">Disconnect</button>
+            </div>
+          </div>
+
+          <div
+            style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">RAW
+                CONFIGURATION COMMANDS (.CFG)</span>
+              <span id="indivCfgStatus" class="mono" style="font-size: 10px; color: var(--text-secondary);"></span>
+            </div>
+            <textarea id="indivCfgEditor" class="mono"
+              style="flex: 1; background: var(--bg-surface); border: 1px solid var(--border-hairline); color: var(--text-primary); padding: 8px; border-radius: var(--radius-xs); resize: none; font-size: 11px;"
+              spellcheck="false">sensorStop
+flushCfg
+dfeDataOutputMode 1
+channelCfg 15 7 0
+adcCfg 2 1
+profileCfg 0 60.5 7 7 57.14 0 0 70 1 256 5209 0 0 158
+chirpCfg 0 0 0 0 0 0 0 1
+frameCfg 0 2 16 0 40 1 0
+sensorStart</textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 6px;">
+              <button id="btnIndivSaveCfg" class="btn-bench" title="Save changes to current .cfg file">Save CFG</button>
+              <button id="btnIndivSendCfg" class="btn-bench active"
+                title="Transmit configuration commands to radar">Send Config to Sensor</button>
             </div>
           </div>
         </div>
 
-        <!-- Lower Diagnostics & Mini Terminal -->
-        <div class="panel-diagnostics">
-          <div class="diag-section">
-            <span class="diag-label">FUSION TELEMETRY</span>
-            <div class="diag-grid">
-              <div>RATE: <span id="diagFrameRate">25 FPS</span></div>
-              <div>LATENCY: <span id="diagLatency">18 ms</span></div>
-              <div>POINTS: <span id="diagPointCount">0</span></div>
-              <div>TRACKS: <span id="diagTrackCount">0</span></div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 3: SENSOR CONFIGURATION (Mounting Matrix & Platform Geometry) -->
+      <!-- ===================================================================== -->
+      <section id="view-sensor-config" class="view-container">
+        <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
+
+          <!-- Mounting Matrix Table -->
+          <div
+            style="width: 520px; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">SENSOR MOUNTING
+              GEOMETRY MATRIX</span>
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th>SENSOR</th>
+                  <th>X (m)</th>
+                  <th>Y (m)</th>
+                  <th>Z (m)</th>
+                  <th>YAW (°)</th>
+                  <th>SECTOR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="radar-color-r1" style="font-weight: 700;">RADAR 1</td>
+                  <td><input type="text" class="matrix-input" value="0.00" id="mountX1"></td>
+                  <td><input type="text" class="matrix-input" value="0.20" id="mountY1"></td>
+                  <td><input type="text" class="matrix-input" value="0.80" id="mountZ1"></td>
+                  <td><input type="text" class="matrix-input" value="0.0" id="mountYaw1"></td>
+                  <td class="radar-color-r1">0°–120°</td>
+                </tr>
+                <tr>
+                  <td class="radar-color-r2" style="font-weight: 700;">RADAR 2</td>
+                  <td><input type="text" class="matrix-input" value="0.17" id="mountX2"></td>
+                  <td><input type="text" class="matrix-input" value="-0.10" id="mountY2"></td>
+                  <td><input type="text" class="matrix-input" value="0.80" id="mountZ2"></td>
+                  <td><input type="text" class="matrix-input" value="120.0" id="mountYaw2"></td>
+                  <td class="radar-color-r2">120°–240°</td>
+                </tr>
+                <tr>
+                  <td class="radar-color-r3" style="font-weight: 700;">RADAR 3</td>
+                  <td><input type="text" class="matrix-input" value="-0.17" id="mountX3"></td>
+                  <td><input type="text" class="matrix-input" value="-0.10" id="mountY3"></td>
+                  <td><input type="text" class="matrix-input" value="0.80" id="mountZ3"></td>
+                  <td><input type="text" class="matrix-input" value="240.0" id="mountYaw3"></td>
+                  <td class="radar-color-r3">240°–360°</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="border-top: 1px solid var(--border-hairline); padding-top: 8px;">
+              <span class="mono"
+                style="font-size: 10px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">COVERAGE
+                BOUNDARIES</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div class="bench-field">
+                  <label class="bench-label">Max Range Limit</label>
+                  <input type="text" class="bench-input mono" value="15.0 m" id="mountMaxRange">
+                </div>
+                <div class="bench-field">
+                  <label class="bench-label">Blind Zone Radius</label>
+                  <input type="text" class="bench-input mono" value="0.30 m" id="mountBlindZone">
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: auto; display: flex; gap: 6px;">
+              <button id="btnSaveMounting" class="btn-bench active" style="flex: 1; justify-content: center;">Save
+                Mounting Profile</button>
+              <button id="btnAutoTare" class="btn-bench" style="flex: 1; justify-content: center;">Auto-Tare
+                Calibrate</button>
             </div>
           </div>
 
-          <div class="diag-section" style="border-bottom:none; padding-bottom:4px;">
-            <span class="diag-label">SYSTEM LOGS</span>
-          </div>
-          <div id="miniTerminalLog" class="mini-terminal">[INIT] Precision workbench ready.
-            [HARDWARE] 3x IWR6843AOP stack standby.</div>
-        </div>
-      </aside>
+          <!-- Platform Schematic -->
+          <div
+            style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+            <span class="mono"
+              style="position: absolute; top: 10px; left: 10px; font-size: 10px; color: var(--text-muted); font-weight: 700;">PLATFORM
+              TOP-VIEW SCHEMATIC</span>
+            <div
+              style="position: relative; width: 280px; height: 280px; border-radius: 50%; border: 1px dashed var(--border-subtle); display: flex; align-items: center; justify-content: center;">
+              <div
+                style="position: absolute; height: 50%; width: 2px; background: var(--color-r1); top: 0; left: 50%; transform: translateX(-50%);">
+              </div>
+              <div
+                style="position: absolute; height: 50%; width: 2px; background: var(--color-r2); top: 0; left: 50%; transform: translateX(-50%) rotate(120deg); transform-origin: bottom;">
+              </div>
+              <div
+                style="position: absolute; height: 50%; width: 2px; background: var(--color-r3); top: 0; left: 50%; transform: translateX(-50%) rotate(240deg); transform-origin: bottom;">
+              </div>
 
-      <!-- Center Panel: 360° Circular Polar Plot Canvas & Data Flow Inspector -->
-      <section class="panel-center">
-        <!-- Radar Selection Tabs (Confirm Data Flow per Radar) -->
-        <div class="radar-tab-bar">
-          <button id="tabRadarAll" class="btn-radar-tab active" data-tab="all">
-            <span class="tab-indicator-dot dot-all"></span>
-            ALL RADARS (360° FUSED)
-          </button>
-          <button id="tabRadar1" class="btn-radar-tab" data-tab="1">
-            <span id="tabDot1" class="tab-indicator-dot" style="background-color: #00E5FF;"></span>
-            RADAR 1 (0°–120°)
-          </button>
-          <button id="tabRadar2" class="btn-radar-tab" data-tab="2">
-            <span id="tabDot2" class="tab-indicator-dot" style="background-color: #B56CFF;"></span>
-            RADAR 2 (120°–240°)
-          </button>
-          <button id="tabRadar3" class="btn-radar-tab" data-tab="3">
-            <span id="tabDot3" class="tab-indicator-dot" style="background-color: #FFB52E;"></span>
-            RADAR 3 (240°–360°)
-          </button>
-        </div>
-
-        <!-- Live Serial Data Flow Confirmation Inspector -->
-        <div id="dataFlowBar" class="data-flow-bar">
-          <div class="flow-item">
-            <span class="flow-label">STREAM:</span>
-            <span id="flowRadarName" class="flow-val highlight">ALL 3 RADARS FUSED</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">FLOW:</span>
-            <span id="flowStatusBadge" class="flow-badge status-offline">STANDBY</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">RX RATE:</span>
-            <span id="flowRxRate" class="flow-val">0.0 kB/s</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">FPS:</span>
-            <span id="flowFps" class="flow-val">0.0 FPS</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">FRAMES:</span>
-            <span id="flowFrames" class="flow-val">#0</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">BYTES:</span>
-            <span id="flowBytes" class="flow-val">0 KB</span>
-          </div>
-          <div class="flow-divider"></div>
-          <div class="flow-item">
-            <span class="flow-label">LIVE DATA:</span>
-            <span id="flowCounts" class="flow-val">0 pts / 0 trks</span>
-          </div>
-        </div>
-
-        <div class="canvas-viewport">
-          <canvas id="radarCanvas"></canvas>
-
-          <!-- Automotive Cockpit Legend (Docked Top-Right) -->
-          <div class="cockpit-legend">
-            <div class="legend-header">360° SENSOR FUSION</div>
-            <div class="legend-row">
-              <span class="legend-dot" style="background:#00E5FF; box-shadow:0 0 6px #00E5FF;"></span>
-              <span class="legend-text">RADAR 1 (0°–120°)</span>
-            </div>
-            <div class="legend-row">
-              <span class="legend-dot" style="background:#B56CFF; box-shadow:0 0 6px #B56CFF;"></span>
-              <span class="legend-text">RADAR 2 (120°–240°)</span>
-            </div>
-            <div class="legend-row">
-              <span class="legend-dot" style="background:#FFB52E; box-shadow:0 0 6px #FFB52E;"></span>
-              <span class="legend-text">RADAR 3 (240°–360°)</span>
-            </div>
-            <div class="legend-divider"></div>
-            <div class="legend-row">
-              <span class="legend-marker marker-static">■</span>
-              <span class="legend-text">STATIC OBJECT</span>
-            </div>
-            <div class="legend-row">
-              <span class="legend-marker marker-dynamic">●</span>
-              <span class="legend-text">DYNAMIC OBJECT</span>
+              <div
+                style="width: 64px; height: 64px; border-radius: 50%; background: var(--bg-surface); border: 1.5px solid var(--accent-cyan); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: var(--accent-cyan); font-family: var(--font-mono); text-align: center;">
+                SURVEILLANCE<br>ORIGIN</div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Right Panel: High-Density Telemetry Table (340px) -->
-      <aside class="panel-right">
-        <div class="panel-bar">
-          <span class="panel-title">LIVE TARGET TELEMETRY</span>
-          <span id="targetCountBadge" class="panel-meta">0 DETECTIONS</span>
+      <!-- ===================================================================== -->
+      <!-- VIEW 4: OBJECT TRACKING (High-Density Telemetry Table & Inspector) -->
+      <!-- ===================================================================== -->
+      <section id="view-object-tracking" class="view-container">
+        <!-- Filter Toolbar -->
+        <div
+          style="background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="mono" style="font-size: 10px; font-weight: 700; color: var(--text-muted);">FILTERS:</span>
+            <button id="filterTrackAll" class="btn-bench active" style="height: 24px; padding: 0 8px;">ALL
+              RADARS</button>
+            <button id="filterTrackR1" class="btn-bench"
+              style="height: 24px; padding: 0 8px; color: var(--color-r1);">R1 CYAN</button>
+            <button id="filterTrackR2" class="btn-bench"
+              style="height: 24px; padding: 0 8px; color: var(--color-r2);">R2 VIOLET</button>
+            <button id="filterTrackR3" class="btn-bench"
+              style="height: 24px; padding: 0 8px; color: var(--color-r3);">R3 AMBER</button>
+            <div class="hairline-divider"></div>
+            <button id="filterTrackDyn" class="btn-bench" style="height: 24px; padding: 0 8px;">DYNAMIC ONLY</button>
+            <button id="filterTrackStatic" class="btn-bench" style="height: 24px; padding: 0 8px;">STATIC ONLY</button>
+          </div>
+          <span id="trackingViewActiveCount" class="mono"
+            style="font-size: 11px; font-weight: 700; color: var(--accent-active);">0 ACTIVE DETECTIONS</span>
         </div>
 
-        <div class="table-viewport">
-          <table class="telemetry-table">
-            <colgroup>
-              <col style="width: 54px;">
-              <col style="width: 58px;">
-              <col style="width: 54px;">
-              <col style="width: 56px;">
-              <col style="width: 68px;">
-              <col style="width: 50px;">
-            </colgroup>
+        <!-- High-Density Telemetry Table -->
+        <div
+          style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); overflow: auto;">
+          <table class="telemetry-table mono" style="width: 100%; border-collapse: collapse; font-size: 11.5px;">
             <thead>
-              <tr>
-                <th>ID</th>
-                <th>ZONE</th>
-                <th class="col-num">RANGE</th>
-                <th class="col-num">AZ (°)</th>
-                <th class="col-num">VELOCITY</th>
-                <th style="text-align: center;">RADAR</th>
+              <tr
+                style="background: var(--bg-surface); border-bottom: 1px solid var(--border-hairline); color: var(--text-muted); text-align: left;">
+                <th style="padding: 8px 10px;">ID</th>
+                <th style="padding: 8px 10px;">TYPE</th>
+                <th style="padding: 8px 10px;">RADAR SOURCE</th>
+                <th style="padding: 8px 10px;">RANGE (m)</th>
+                <th style="padding: 8px 10px;">AZIMUTH (°)</th>
+                <th style="padding: 8px 10px;">VELOCITY (m/s)</th>
+                <th style="padding: 8px 10px;">ZONE STATUS</th>
               </tr>
             </thead>
-            <tbody id="telemetryTableBody">
+            <tbody id="telemetryBodyFullTracking">
               <tr>
-                <td colspan="6"
-                  style="text-align: center; padding: 36px 0; color: var(--text-muted); font-size: 10px; font-family: var(--font-mono);">
-                  WAITING FOR RADAR TARGETS...
-                </td>
+                <td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">Waiting for radar
+                  targets...</td>
               </tr>
             </tbody>
           </table>
         </div>
-      </aside>
+      </section>
 
-    </main>
+      <!-- ===================================================================== -->
+      <!-- VIEW 5: ZONE SETTINGS (Numeric Distance Inputs, No Slide Bars) -->
+      <!-- ===================================================================== -->
+      <section id="view-zone-settings" class="view-container">
+        <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
+
+          <!-- Direct Numeric Threshold Controls -->
+          <div
+            style="width: 440px; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 14px; display: flex; flex-direction: column; gap: 12px; overflow: auto;">
+
+            <div style="border-bottom: 1px solid var(--border-hairline); padding-bottom: 6px;">
+              <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">ZONE THRESHOLDS
+                CONFIGURATION</span>
+              <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Direct numeric distance inputs (no
+                slide bars), real-time transparent preview.</p>
+            </div>
+
+            <!-- Danger Zone Row -->
+            <div class="zone-number-row" style="border-color: var(--accent-danger);">
+              <div>
+                <span class="zone-tag-mini danger">DANGER ZONE</span>
+                <span style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px;">Immediate
+                  Collision Perimeter</span>
+              </div>
+              <div class="number-input-wrapper">
+                <input type="number" id="inputDangerZoneDirect" min="0.1" max="15.0" step="0.1" value="2.0"
+                  class="zone-num-input danger">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+
+            <!-- Warm Zone Row -->
+            <div class="zone-number-row" style="border-color: var(--accent-warning);">
+              <div>
+                <span class="zone-tag-mini warm">WARM ZONE</span>
+                <span style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px;">Warning
+                  Deceleration Perimeter</span>
+              </div>
+              <div class="number-input-wrapper">
+                <input type="number" id="inputWarmZoneDirect" min="0.2" max="15.0" step="0.1" value="4.0"
+                  class="zone-num-input warm">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+
+            <!-- Safe Zone Row -->
+            <div class="zone-number-row" style="border-color: var(--accent-active);">
+              <div>
+                <span class="zone-tag-mini safe"
+                  style="background: var(--accent-active-dim); color: var(--accent-active); border: 1px solid var(--accent-active);">SAFE
+                  ZONE</span>
+                <span style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px;">All distances
+                  beyond Warm threshold</span>
+              </div>
+              <span id="labelSafeThresholdDirect" class="mono"
+                style="font-size: 12px; font-weight: 700; color: var(--accent-active);">&gt; 4.0 m</span>
+            </div>
+
+            <!-- Range Scale Control -->
+            <div style="border-top: 1px solid var(--border-hairline); padding-top: 8px;">
+              <span class="setting-label">RANGE SCALE</span>
+              <div class="segmented-control">
+                <button id="btnDirectScale5m" class="btn-seg">5M</button>
+                <button id="btnDirectScale10m" class="btn-seg active">10M</button>
+                <button id="btnDirectScale15m" class="btn-seg">15M</button>
+              </div>
+            </div>
+
+            <!-- Display Layers Toggles -->
+            <div style="border-top: 1px solid var(--border-hairline); padding-top: 8px;">
+              <span class="setting-label">DISPLAY LAYERS</span>
+              <div class="segmented-control">
+                <button id="btnDirectToolFov" class="btn-seg active">±65° FOV</button>
+                <button id="btnDirectToolVel" class="btn-seg active">VECTORS</button>
+                <button id="btnDirectToolBounds" class="btn-seg active">BOUNDARIES</button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div
+              style="margin-top: auto; display: flex; gap: 8px; border-top: 1px solid var(--border-hairline); padding-top: 8px;">
+              <button id="btnApplyZonesDirect" class="btn-bench active"
+                style="flex: 1; justify-content: center; height: 32px; font-weight: 700;">APPLY THRESHOLDS</button>
+              <button id="btnResetZonesDirect" class="btn-bench"
+                style="flex: 1; justify-content: center; height: 32px;">RESET TO DEFAULT</button>
+            </div>
+          </div>
+
+          <!-- Right: Miniature 360° Transparent Live Preview -->
+          <div
+            style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+            <span class="mono"
+              style="position: absolute; top: 10px; left: 10px; font-size: 10px; color: var(--text-muted); font-weight: 700;">REAL-TIME
+              TRANSPARENT ZONE PREVIEW</span>
+
+            <div
+              style="position: relative; width: 280px; height: 280px; border-radius: 50%; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; background: transparent;">
+              <div style="position: absolute; height: 100%; width: 1px; background: var(--border-hairline);"></div>
+              <div style="position: absolute; width: 100%; height: 1px; background: var(--border-hairline);"></div>
+
+              <div id="previewRingSafe"
+                style="position: absolute; inset: 10px; border-radius: 50%; border: 1px dashed rgba(34, 197, 94, 0.5); pointer-events: none;">
+              </div>
+              <div id="previewRingWarm"
+                style="position: absolute; width: 190px; height: 190px; border-radius: 50%; border: 1.5px solid var(--accent-warning); pointer-events: none;">
+              </div>
+              <div id="previewRingDanger"
+                style="position: absolute; width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--accent-danger); pointer-events: none;">
+              </div>
+
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); z-index: 10;">
+              </div>
+
+              <span class="mono"
+                style="position: absolute; top: 18px; right: 26px; font-size: 8px; font-weight: 700; color: var(--accent-active);">SAFE</span>
+              <span id="previewBadgeWarm" class="mono"
+                style="position: absolute; top: 48px; right: 48px; font-size: 8px; font-weight: 700; color: var(--accent-warning);">WARM</span>
+              <span id="previewBadgeDanger" class="mono"
+                style="position: absolute; top: 78px; right: 78px; font-size: 8px; font-weight: 700; color: var(--accent-danger);">DANGER</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW 6: EVENT LOGS & APPLICATION SETTINGS -->
+      <!-- ===================================================================== -->
+      <section id="view-event-logs" class="view-container">
+        <div style="display: flex; gap: 10px; flex: 1; min-height: 0;">
+
+          <!-- Audit Table -->
+          <div
+            style="flex: 1; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">SYSTEM AUDIT &
+                INTRUSION EVENT LOGS</span>
+              <div style="display: flex; gap: 4px;">
+                <button id="btnFilterLogsAll" class="btn-bench active"
+                  style="height: 22px; padding: 0 6px;">ALL</button>
+                <button id="btnFilterLogsDanger" class="btn-bench"
+                  style="height: 22px; padding: 0 6px; color: var(--accent-danger);">DANGER</button>
+                <button id="btnFilterLogsWarn" class="btn-bench"
+                  style="height: 22px; padding: 0 6px; color: var(--accent-warning);">WARN</button>
+                <button id="btnFilterLogsSystem" class="btn-bench"
+                  style="height: 22px; padding: 0 6px; color: var(--accent-active);">SYSTEM</button>
+              </div>
+            </div>
+
+            <div
+              style="flex: 1; background: var(--bg-viewport); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); overflow: auto;">
+              <table class="mono" style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead>
+                  <tr
+                    style="background: var(--bg-surface); border-bottom: 1px solid var(--border-hairline); color: var(--text-muted); text-align: left;">
+                    <th style="padding: 6px 8px;">TIMESTAMP</th>
+                    <th style="padding: 6px 8px;">SEVERITY</th>
+                    <th style="padding: 6px 8px;">SOURCE</th>
+                    <th style="padding: 6px 8px;">EVENT DESCRIPTION</th>
+                  </tr>
+                </thead>
+                <tbody id="auditLogsTableBody">
+                  <tr>
+                    <td style="padding: 6px 8px; color: var(--text-muted);">14:40:00.000</td>
+                    <td style="padding: 6px 8px;"><span class="mono"
+                        style="font-size: 9px; font-weight: 700; color: var(--accent-active);">SYSTEM</span></td>
+                    <td style="padding: 6px 8px; font-weight: 700; color: var(--accent-cyan);">FUSION</td>
+                    <td style="padding: 6px 8px;">3-Radar global coordinate fusion pipeline active @ 25 FPS</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button id="btnExportAuditLogs" class="btn-bench">Export Audit Log (CSV)</button>
+            </div>
+          </div>
+
+          <!-- Application Settings -->
+          <div
+            style="width: 300px; background: var(--bg-panel); border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+            <span class="mono" style="font-size: 11px; font-weight: 700; color: var(--text-primary);">APPLICATION
+              SETTINGS</span>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="bench-field">
+                <label class="bench-label">Measurement Units</label>
+                <select class="bench-select mono">
+                  <option>Metric (meters, m/s)</option>
+                  <option>Imperial (feet, mph)</option>
+                </select>
+              </div>
+              <div class="bench-field">
+                <label class="bench-label">Telemetry Refresh Rate</label>
+                <select class="bench-select mono">
+                  <option>25 FPS (40ms)</option>
+                  <option>30 FPS (33ms)</option>
+                  <option>50 FPS (20ms)</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top: auto;">
+              <button class="btn-bench active" style="width: 100%; justify-content: center;">Save System
+                Settings</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
 
   </div>
 
@@ -537,13 +1132,14 @@
     </div>
   </div>
 
-  <!-- Scripts (Pure ES6 - Zero build steps) -->
-  <script src="js/circular_plot.js?v=7"></script>
-  <script src="js/telemetry_table.js?v=7"></script>
-  <script src="js/sensor_control.js?v=7"></script>
-  <script src="js/config_modal.js?v=7"></script>
-  <script src="js/websocket.js?v=7"></script>
-  <script src="js/app.js?v=7"></script>
+  <!-- Scripts -->
+  <script src="js/circular_plot.js?v=13"></script>
+  <script src="js/telemetry_table.js?v=13"></script>
+  <script src="js/sensor_control.js?v=13"></script>
+  <script src="js/config_modal.js?v=13"></script>
+  <script src="js/websocket.js?v=13"></script>
+  <script src="js/view_manager.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 
 </html>

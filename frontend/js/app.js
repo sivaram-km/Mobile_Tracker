@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Initialize Hardware Modals
   const modals = new ConfigModalManager();
 
+  // 4b. Initialize Multi-View Workbench Manager & Broadcaster
+  const viewManager = new ViewManager(circularPlot, telemetryTable, sensorControls, modals);
+
   // Diagnostics elements
   const diagFps = document.getElementById('diagFrameRate');
   const diagLatency = document.getElementById('diagLatency');
@@ -224,6 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Update Left Sensor Panel
       sensorControls.update(payload.sensors);
+
+      // Update Live Detection Summary & Full Tracking View
+      if (viewManager) {
+        viewManager.updateSummary(payload.targets);
+      }
     },
     // onStatusChange handler
     (status) => {

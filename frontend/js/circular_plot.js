@@ -221,21 +221,46 @@ class CircularPlot {
   }
 
   setRangeScale(maxMeters) {
-    this.maxRange = maxMeters;
-    if (maxMeters === 5.0) {
-      this.dangerRadius = 1.0;
-      this.warningRadius = 2.5;
+    this.maxRange = parseFloat(maxMeters) || 10.0;
+    if (this.maxRange === 5.0) {
       this.rings = [1.0, 2.0, 3.0, 4.0, 5.0];
-    } else if (maxMeters === 15.0) {
-      this.dangerRadius = 3.0;
-      this.warningRadius = 6.0;
+    } else if (this.maxRange === 15.0) {
       this.rings = [3.0, 6.0, 9.0, 12.0, 15.0];
     } else {
       // Default 10.0m
-      this.dangerRadius = 2.0;
-      this.warningRadius = 4.0;
+      this.maxRange = 10.0;
       this.rings = [2.0, 4.0, 6.0, 8.0, 10.0];
     }
+    // Clamp thresholds to ensure they are within the new maxRange
+    if (this.warningRadius >= this.maxRange) {
+      this.warningRadius = this.maxRange * 0.4;
+    }
+    if (this.dangerRadius >= this.warningRadius) {
+      this.dangerRadius = this.warningRadius * 0.5;
+    }
+  }
+
+  setMaxRange(maxMeters) {
+    this.setRangeScale(maxMeters);
+  }
+
+  setZoneThresholds(dangerMeters, warmMeters) {
+    this.setCustomZones(dangerMeters, warmMeters);
+  }
+
+  toggleFoV(force) {
+    this.showFoV = force !== undefined ? force : !this.showFoV;
+    return this.showFoV;
+  }
+
+  toggleVelocity(force) {
+    this.showVelocity = force !== undefined ? force : !this.showVelocity;
+    return this.showVelocity;
+  }
+
+  toggleSectorBounds(force) {
+    this.showSectorBounds = force !== undefined ? force : !this.showSectorBounds;
+    return this.showSectorBounds;
   }
 
   resize() {
@@ -324,11 +349,12 @@ class CircularPlot {
   drawSensorFoVs() {
     const ctx = this.ctx;
     const r = this.plotRadius;
+    const isLight = this.theme === 'light';
 
     // Three equal 120° contiguous sectors dividing the 360° circle:
     // Sector 1: Radar 1 (0°–120°)   -> Electric Cyan / Deep Blue gradient
-    // Sector 2: Radar 2 (120°–240°) -> Bright Violet / Deep Purple gradient
-    // Sector 3: Radar 3 (240°–360°) -> Bright Amber / Deep Orange gradient
+    // Sector 2: Radar 2 (120°–240°) -> Violet / Purple gradient
+    // Sector 3: Radar 3 (240°–360°) -> Amber / Orange gradient
     const sectors = [
       {
         id: 1,
@@ -336,9 +362,22 @@ class CircularPlot {
         endDeg: 120.0,
         midDeg: 60.0,
         label: 'RADAR 1 (0°–120°)',
-        color: this.colors.radar1,
-        glowColor: this.colors.radar1Glow,
-        colorGrad: this.colors.radar1Grad
+        coreColor: isLight ? '#00A3C4' : '#00E5FF',
+        glowHalo: isLight ? 'rgba(0, 163, 196, 0.45)' : 'rgba(0, 229, 255, 0.50)',
+        spokeGlow: isLight ? 'rgba(0, 163, 196, 0.70)' : 'rgba(0, 229, 255, 0.75)',
+        gradientStops: isLight ? [
+          { pos: 0.00, color: 'rgba(0, 74, 124, 0.02)' },
+          { pos: 0.35, color: 'rgba(0, 95, 165, 0.05)' },
+          { pos: 0.70, color: 'rgba(0, 140, 200, 0.09)' },
+          { pos: 0.90, color: 'rgba(0, 163, 196, 0.14)' },
+          { pos: 1.00, color: 'rgba(0, 163, 196, 0.20)' }
+        ] : [
+          { pos: 0.00, color: 'rgba(0, 45, 110, 0.02)' },
+          { pos: 0.35, color: 'rgba(0, 70, 160, 0.06)' },
+          { pos: 0.70, color: 'rgba(0, 150, 225, 0.10)' },
+          { pos: 0.90, color: 'rgba(0, 229, 255, 0.16)' },
+          { pos: 1.00, color: 'rgba(0, 229, 255, 0.24)' }
+        ]
       },
       {
         id: 2,
@@ -346,9 +385,22 @@ class CircularPlot {
         endDeg: 240.0,
         midDeg: 180.0,
         label: 'RADAR 2 (120°–240°)',
-        color: this.colors.radar2,
-        glowColor: this.colors.radar2Glow,
-        colorGrad: this.colors.radar2Grad
+        coreColor: isLight ? '#8B3DFF' : '#C45BFF',
+        glowHalo: isLight ? 'rgba(139, 61, 255, 0.45)' : 'rgba(196, 91, 255, 0.50)',
+        spokeGlow: isLight ? 'rgba(139, 61, 255, 0.70)' : 'rgba(196, 91, 255, 0.75)',
+        gradientStops: isLight ? [
+          { pos: 0.00, color: 'rgba(76, 29, 149, 0.02)' },
+          { pos: 0.35, color: 'rgba(107, 33, 168, 0.05)' },
+          { pos: 0.70, color: 'rgba(139, 61, 255, 0.09)' },
+          { pos: 0.90, color: 'rgba(139, 61, 255, 0.14)' },
+          { pos: 1.00, color: 'rgba(139, 61, 255, 0.20)' }
+        ] : [
+          { pos: 0.00, color: 'rgba(55, 10, 95, 0.02)' },
+          { pos: 0.35, color: 'rgba(90, 20, 150, 0.06)' },
+          { pos: 0.70, color: 'rgba(150, 50, 225, 0.10)' },
+          { pos: 0.90, color: 'rgba(196, 91, 255, 0.16)' },
+          { pos: 1.00, color: 'rgba(196, 91, 255, 0.24)' }
+        ]
       },
       {
         id: 3,
@@ -356,9 +408,22 @@ class CircularPlot {
         endDeg: 360.0,
         midDeg: 300.0,
         label: 'RADAR 3 (240°–360°)',
-        color: this.colors.radar3,
-        glowColor: this.colors.radar3Glow,
-        colorGrad: this.colors.radar3Grad
+        coreColor: isLight ? '#D97706' : '#FFB52E',
+        glowHalo: isLight ? 'rgba(217, 119, 6, 0.45)' : 'rgba(255, 181, 46, 0.50)',
+        spokeGlow: isLight ? 'rgba(217, 119, 6, 0.70)' : 'rgba(255, 181, 46, 0.75)',
+        gradientStops: isLight ? [
+          { pos: 0.00, color: 'rgba(146, 64, 14, 0.02)' },
+          { pos: 0.35, color: 'rgba(180, 83, 9, 0.05)' },
+          { pos: 0.70, color: 'rgba(217, 119, 6, 0.09)' },
+          { pos: 0.90, color: 'rgba(217, 119, 6, 0.14)' },
+          { pos: 1.00, color: 'rgba(217, 119, 6, 0.20)' }
+        ] : [
+          { pos: 0.00, color: 'rgba(120, 40, 15, 0.02)' },
+          { pos: 0.35, color: 'rgba(195, 65, 15, 0.06)' },
+          { pos: 0.70, color: 'rgba(240, 125, 20, 0.10)' },
+          { pos: 0.90, color: 'rgba(255, 181, 46, 0.16)' },
+          { pos: 1.00, color: 'rgba(255, 181, 46, 0.24)' }
+        ]
       }
     ];
 
@@ -374,24 +439,49 @@ class CircularPlot {
       const startAngle = (s.startDeg - 90) * (Math.PI / 180);
       const endAngle = (s.endDeg - 90) * (Math.PI / 180);
 
-      // Glowing outer boundary arc & dividing radial boundary lines (transparent sector interior)
+      // 1. Subtle Transparent Sector Beam Fill with Radial Gradient
+      const grad = ctx.createRadialGradient(this.cx, this.cy, 0, this.cx, this.cy, r);
+      s.gradientStops.forEach(st => {
+        grad.addColorStop(st.pos, st.color);
+      });
+
+      ctx.save();
+      ctx.globalAlpha = isDimmed ? 0.2 : 1.0;
+      ctx.beginPath();
+      ctx.moveTo(this.cx, this.cy);
+      ctx.arc(this.cx, this.cy, r, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Glowing Outer Boundary Arc & Radial Dividing Spoke Lines
       if (this.showSectorBounds) {
-        // Glowing Outer Sector Arc
+        ctx.save();
+
+        // Soft Glowing Outer Boundary Bloom Arc
         ctx.beginPath();
         ctx.arc(this.cx, this.cy, r, startAngle, endAngle);
-        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.15)' : s.glowColor;
-        ctx.lineWidth = (isSelected && this.selectedRadar !== 'all') ? 2.6 : 1.8;
+        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.10)' : s.glowHalo;
+        ctx.lineWidth = (isSelected && this.selectedRadar !== 'all') ? 5.5 : 3.8;
         ctx.stroke();
 
-        // Dividing Spoke Ray at start boundary
+        // Crisp Neon Perimeter Boundary Core Arc
+        ctx.beginPath();
+        ctx.arc(this.cx, this.cy, r, startAngle, endAngle);
+        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.25)' : s.coreColor;
+        ctx.lineWidth = (isSelected && this.selectedRadar !== 'all') ? 2.5 : 1.8;
+        ctx.stroke();
+
+        // Dividing Radial Boundary Spoke Ray at Sector Start
         ctx.beginPath();
         ctx.moveTo(this.cx, this.cy);
         ctx.lineTo(this.cx + r * Math.cos(startAngle), this.cy + r * Math.sin(startAngle));
-        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.15)' : s.glowColor;
+        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.20)' : s.spokeGlow;
         ctx.lineWidth = (isSelected && this.selectedRadar !== 'all') ? 2.0 : 1.4;
         ctx.stroke();
 
-        // Sector Orientation Label with protective pill knockout
+        // Sector Orientation Label with Protective Pill Knockout
         const midRad = (s.midDeg - 90) * (Math.PI / 180);
         const labelR = r * 0.86;
         const lx = this.cx + labelR * Math.cos(midRad);
@@ -403,18 +493,20 @@ class CircularPlot {
         const pillH = 17;
 
         // Draw subtle pill background so concentric rings never cut through
-        ctx.fillStyle = this.theme === 'light' ? 'rgba(255, 255, 255, 0.92)' : 'rgba(7, 11, 20, 0.92)';
+        ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(7, 11, 20, 0.94)';
         ctx.beginPath();
         ctx.roundRect(lx - pillW / 2, ly - pillH / 2, pillW, pillH, 3);
         ctx.fill();
-        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.2)' : s.color;
+        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.2)' : s.coreColor;
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        ctx.fillStyle = isDimmed ? 'rgba(125, 133, 144, 0.4)' : s.color;
+        ctx.fillStyle = isDimmed ? 'rgba(125, 133, 144, 0.4)' : s.coreColor;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(s.label, lx, ly + 0.5);
+
+        ctx.restore();
       }
     });
   }
