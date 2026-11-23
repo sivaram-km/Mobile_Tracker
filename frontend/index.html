@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>360° Radar Mobile Tracker — Engineering Workbench</title>
+  <link rel="stylesheet" href="css/style.css?v=7">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="workbench-container">
+
+    <!-- Top Navigation Bar (44px Precision Header) -->
+    <header class="workbench-header">
+      <div class="header-left">
+        <h1 class="app-title">360° RADAR MOBILE TRACKER</h1>
+        <div class="hairline-divider"></div>
+        <div class="header-status-item">
+          <span id="navStatusDot" class="status-dot-6px"></span>
+          <span id="navStatusText">OFFLINE</span>
+        </div>
+        <div class="hairline-divider"></div>
+        <span class="tag-badge">3-RADAR FUSION</span>
+      </div>
+
+      <div class="header-right">
+        <button id="btnThemeToggle" class="btn-bench" title="Toggle Dark/White Mode">
+          <svg id="themeIconSun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span id="themeToggleText">WHITE MODE</span>
+        </button>
+
+        <button id="btnConfig" class="btn-bench">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          SENSOR CONFIG
+        </button>
+
+        <button id="btnLogs" class="btn-bench">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          EVENT LOGS
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Docked Split View (Left 280px | Center Flex | Right 340px) -->
+    <main class="workbench-main">
+
+      <!-- Left Panel: Radar Sensors & Diagnostics (280px) -->
+      <aside class="panel-left">
+        <div class="panel-bar">
+          <span class="panel-title">RADAR SENSORS</span>
+          <span id="activeSensorSummary" class="panel-meta">0/3 ACTIVE</span>
+        </div>
+
+        <!-- Edge-to-Edge Flat Radar Sensor Rows -->
+        <div class="radar-list">
+          <!-- Sensor 1 (0° / North) -->
+          <div id="sensorCard1" class="radar-row">
+            <div class="radar-row-line">
+              <div>
+                <span class="radar-id-text">RADAR 1</span>
+                <span class="radar-orient-tag">0° NORTH</span>
+              </div>
+              <div id="sensorBadge1" class="radar-status-indicator">
+                <span class="status-dot-6px"></span>
+                <span class="status-text">OFFLINE</span>
+              </div>
+            </div>
+            <div class="radar-row-line">
+              <span class="radar-target-counter">TARGETS: <span id="sensorTargets1">0</span></span>
+              <label class="switch-flat" title="Toggle Sensor Blind Spot">
+                <input type="checkbox" id="sensorToggle1" checked>
+                <span class="slider-flat"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sensor 2 (120° / South-East) -->
+          <div id="sensorCard2" class="radar-row">
+            <div class="radar-row-line">
+              <div>
+                <span class="radar-id-text">RADAR 2</span>
+                <span class="radar-orient-tag">120° S-EAST</span>
+              </div>
+              <div id="sensorBadge2" class="radar-status-indicator">
+                <span class="status-dot-6px"></span>
+                <span class="status-text">OFFLINE</span>
+              </div>
+            </div>
+            <div class="radar-row-line">
+              <span class="radar-target-counter">TARGETS: <span id="sensorTargets2">0</span></span>
+              <label class="switch-flat" title="Toggle Sensor Blind Spot">
+                <input type="checkbox" id="sensorToggle2" checked>
+                <span class="slider-flat"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sensor 3 (240° / South-West) -->
+          <div id="sensorCard3" class="radar-row">
+            <div class="radar-row-line">
+              <div>
+                <span class="radar-id-text">RADAR 3</span>
+                <span class="radar-orient-tag">240° S-WEST</span>
+              </div>
+              <div id="sensorBadge3" class="radar-status-indicator">
+                <span class="status-dot-6px"></span>
+                <span class="status-text">OFFLINE</span>
+              </div>
+            </div>
+            <div class="radar-row-line">
+              <span class="radar-target-counter">TARGETS: <span id="sensorTargets3">0</span></span>
+              <label class="switch-flat" title="Toggle Sensor Blind Spot">
+                <input type="checkbox" id="sensorToggle3" checked>
+                <span class="slider-flat"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower Diagnostics & Mini Terminal -->
+        <div class="panel-diagnostics">
+          <div class="diag-section">
+            <span class="diag-label">RANGE SCALE</span>
+            <div class="segmented-control">
+              <button id="btnRange5m" class="btn-seg">5M</button>
+              <button id="btnRange10m" class="btn-seg active">10M</button>
+              <button id="btnRange15m" class="btn-seg">15M</button>
+            </div>
+          </div>
+
+          <div class="diag-section">
+            <span class="diag-label">FUSION TELEMETRY</span>
+            <div class="diag-grid">
+              <div>RATE: <span id="diagFrameRate">25 FPS</span></div>
+              <div>LATENCY: <span id="diagLatency">18 ms</span></div>
+              <div>POINTS: <span id="diagPointCount">0</span></div>
+              <div>TRACKS: <span id="diagTrackCount">0</span></div>
+            </div>
+          </div>
+
+          <div class="diag-section" style="border-bottom:none; padding-bottom:4px;">
+            <span class="diag-label">SYSTEM LOGS</span>
+          </div>
+          <div id="miniTerminalLog" class="mini-terminal">[INIT] Precision workbench ready.
+[HARDWARE] 3x IWR6843AOP stack standby.</div>
+        </div>
+      </aside>
+
+      <!-- Center Panel: 360° Circular Polar Plot Canvas & Data Flow Inspector -->
+      <section class="panel-center">
+        <!-- Radar Selection Tabs (Confirm Data Flow per Radar) -->
+        <div class="radar-tab-bar">
+          <button id="tabRadarAll" class="btn-radar-tab active" data-tab="all">
+            <span class="tab-indicator-dot dot-all"></span>
+            ALL RADARS (360° FUSED)
+          </button>
+          <button id="tabRadar1" class="btn-radar-tab" data-tab="1">
+            <span id="tabDot1" class="tab-indicator-dot"></span>
+            RADAR 1 (0° NORTH)
+          </button>
+          <button id="tabRadar2" class="btn-radar-tab" data-tab="2">
+            <span id="tabDot2" class="tab-indicator-dot"></span>
+            RADAR 2 (120° S-EAST)
+          </button>
+          <button id="tabRadar3" class="btn-radar-tab" data-tab="3">
+            <span id="tabDot3" class="tab-indicator-dot"></span>
+            RADAR 3 (240° S-WEST)
+          </button>
+        </div>
+
+        <!-- Live Serial Data Flow Confirmation Inspector -->
+        <div id="dataFlowBar" class="data-flow-bar">
+          <div class="flow-item">
+            <span class="flow-label">STREAM:</span>
+            <span id="flowRadarName" class="flow-val highlight">ALL 3 RADARS FUSED</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">FLOW:</span>
+            <span id="flowStatusBadge" class="flow-badge status-offline">STANDBY</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">RX RATE:</span>
+            <span id="flowRxRate" class="flow-val">0.0 kB/s</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">FPS:</span>
+            <span id="flowFps" class="flow-val">0.0 FPS</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">FRAMES:</span>
+            <span id="flowFrames" class="flow-val">#0</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">BYTES:</span>
+            <span id="flowBytes" class="flow-val">0 KB</span>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-item">
+            <span class="flow-label">LIVE DATA:</span>
+            <span id="flowCounts" class="flow-val">0 pts / 0 trks</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport">
+          <canvas id="radarCanvas"></canvas>
+
+          <!-- Docked Overlay Toolbar (Bottom-Left) -->
+          <div class="radar-overlay-toolbar">
+            <button id="btnToolFov" class="btn-tool-toggle active">±65° FOV</button>
+            <button id="btnToolVel" class="btn-tool-toggle active">VECTORS</button>
+            <button id="btnToolBounds" class="btn-tool-toggle active">BOUNDARIES</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: High-Density Telemetry Table (340px) -->
+      <aside class="panel-right">
+        <div class="panel-bar">
+          <span class="panel-title">LIVE TARGET TELEMETRY</span>
+          <span id="targetCountBadge" class="panel-meta">0 DETECTIONS</span>
+        </div>
+
+        <div class="table-viewport">
+          <table class="telemetry-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>ZONE</th>
+                <th class="col-num">RANGE</th>
+                <th class="col-num">AZIMUTH</th>
+                <th class="col-num">VELOCITY</th>
+                <th style="text-align: center;">SENSOR</th>
+              </tr>
+            </thead>
+            <tbody id="telemetryTableBody">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 36px 0; color: var(--text-muted); font-size: 10px; font-family: var(--font-mono);">
+                  WAITING FOR RADAR TARGETS...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- Modal: Hardware Radar Configuration -->
+  <div id="configModal" class="modal-overlay">
+    <div class="modal-bench">
+      <div class="modal-header-bench">
+        <span class="modal-title-bench">HARDWARE RADAR CONFIGURATION</span>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-bench">
+        <p style="font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); line-height: 1.4;">
+          Select physical USB-UART ports for each IWR6843AOP radar. CLI port transmits chirp configurations (115200 baud); Data port ingests point clouds and targets (921600 baud).
+        </p>
+
+        <!-- Radar 1 Card -->
+        <div class="radar-modal-card">
+          <div class="radar-modal-card-header">
+            <span>RADAR 1 (0° / NORTH)</span>
+            <span id="cfgStatusBadge1" class="radar-status-indicator">
+              <span class="status-dot-6px"></span>
+              <span class="status-text">OFFLINE</span>
+            </span>
+          </div>
+          <div class="radar-modal-grid">
+            <div class="bench-field">
+              <label class="bench-label">CLI Port (115200)</label>
+              <select id="cfgCliSelect1" class="bench-select">
+                <option value="">-- None / Already Configured --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Data Port (921600)</label>
+              <select id="cfgDataSelect1" class="bench-select">
+                <option value="">-- Disconnected --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Chirp Config</label>
+              <select id="cfgFileSelect1" class="bench-select">
+                <option value="AOP_6m_default.cfg">AOP_6m_default.cfg</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radar 2 Card -->
+        <div class="radar-modal-card">
+          <div class="radar-modal-card-header">
+            <span>RADAR 2 (120° / SOUTH-EAST)</span>
+            <span id="cfgStatusBadge2" class="radar-status-indicator">
+              <span class="status-dot-6px"></span>
+              <span class="status-text">OFFLINE</span>
+            </span>
+          </div>
+          <div class="radar-modal-grid">
+            <div class="bench-field">
+              <label class="bench-label">CLI Port (115200)</label>
+              <select id="cfgCliSelect2" class="bench-select">
+                <option value="">-- None / Already Configured --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Data Port (921600)</label>
+              <select id="cfgDataSelect2" class="bench-select">
+                <option value="">-- Disconnected --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Chirp Config</label>
+              <select id="cfgFileSelect2" class="bench-select">
+                <option value="AOP_6m_default.cfg">AOP_6m_default.cfg</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radar 3 Card -->
+        <div class="radar-modal-card">
+          <div class="radar-modal-card-header">
+            <span>RADAR 3 (240° / SOUTH-WEST)</span>
+            <span id="cfgStatusBadge3" class="radar-status-indicator">
+              <span class="status-dot-6px"></span>
+              <span class="status-text">OFFLINE</span>
+            </span>
+          </div>
+          <div class="radar-modal-grid">
+            <div class="bench-field">
+              <label class="bench-label">CLI Port (115200)</label>
+              <select id="cfgCliSelect3" class="bench-select">
+                <option value="">-- None / Already Configured --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Data Port (921600)</label>
+              <select id="cfgDataSelect3" class="bench-select">
+                <option value="">-- Disconnected --</option>
+              </select>
+            </div>
+            <div class="bench-field">
+              <label class="bench-label">Chirp Config</label>
+              <select id="cfgFileSelect3" class="bench-select">
+                <option value="AOP_6m_default.cfg">AOP_6m_default.cfg</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-bench">
+        <button id="btnScanPorts" class="btn-bench">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          SCAN PORTS
+        </button>
+
+        <div style="display: flex; gap: 8px;">
+          <button id="btnDisconnectAll" class="btn-bench" style="color: var(--accent-danger); border-color: rgba(239, 68, 68, 0.4);">
+            DISCONNECT ALL
+          </button>
+          <button id="btnConnectRadars" class="btn-bench" style="background: var(--bg-surface-active); color: var(--accent-cyan); border-color: var(--accent-cyan);">
+            CONNECT RADARS
+          </button>
+          <button class="btn-bench btn-modal-close">CLOSE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Event Logs -->
+  <div id="logsModal" class="modal-overlay">
+    <div class="modal-bench">
+      <div class="modal-header-bench">
+        <span class="modal-title-bench">RADAR SYSTEM EVENT LOGS</span>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body-bench" style="font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); line-height: 1.6;">
+        <p>[SYS_INIT] 360° Real-time Radar Mobile Tracker workbench initialized.</p>
+        <p>[CONFIG] Anti-SaaS workbench theme loaded (0px shadow, 2px radius, monospace data).</p>
+        <p>[HARDWARE] Pure real-time hardware mode active (zero simulation).</p>
+        <p>[FUSION] 3-Radar fusion matrix calibrated: 0° (North), 120° (South-East), 240° (South-West).</p>
+        <p>[STREAM] Streaming real-time telemetry over ws://localhost:8000/ws/telemetry.</p>
+      </div>
+      <div class="modal-footer-bench" style="justify-content: flex-end;">
+        <button class="btn-bench btn-modal-close">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (Pure ES6 - Zero build steps) -->
+  <script src="js/circular_plot.js?v=7"></script>
+  <script src="js/telemetry_table.js?v=7"></script>
+  <script src="js/sensor_control.js?v=7"></script>
+  <script src="js/config_modal.js?v=7"></script>
+  <script src="js/websocket.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
+</body>
+</html>

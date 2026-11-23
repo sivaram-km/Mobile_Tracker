@@ -1,0 +1,951 @@
+/* ==========================================================================
+   360° Radar Mobile Tracker — Precision Engineering Workbench Theme
+   Design System: Foxglove Studio / ROS RViz / Tektronix Hardware Tooling
+   Supports: Dark Workbench & White Mode (Crisp Precision Instrumentation)
+   ========================================================================== */
+
+:root {
+  /* Surfaces & Viewports (Dark Mode Default) */
+  --bg-viewport: #0B0E14;
+  --bg-panel: #11151E;
+  --bg-surface: #141A25;
+  --bg-surface-hover: #181E2A;
+  --bg-surface-active: #1F2737;
+
+  /* Hairline Borders & Dividers */
+  --border-hairline: #222936;
+  --border-subtle: #2D3748;
+  --border-focus: #38BDF8;
+
+  /* Typography Colors */
+  --text-primary: #E6EDF3;
+  --text-secondary: #7D8590;
+  --text-muted: #484F58;
+
+  /* Signal Accents */
+  --accent-active: #22C55E;
+  --accent-active-dim: rgba(34, 197, 94, 0.12);
+  --accent-cyan: #38BDF8;
+  --accent-cyan-dim: rgba(56, 189, 248, 0.12);
+  --accent-warning: #F59E0B;
+  --accent-warning-dim: rgba(245, 158, 11, 0.12);
+  --accent-danger: #EF4444;
+  --accent-danger-dim: rgba(239, 68, 68, 0.12);
+
+  /* Component Colors */
+  --terminal-bg: #080A0E;
+  --terminal-text: #94A3B8;
+  --input-bg: #0B0E14;
+  --modal-overlay-bg: rgba(5, 7, 10, 0.75);
+  --switch-off-bg: #222936;
+  --scrollbar-thumb: #222936;
+  --scrollbar-thumb-hover: #334155;
+
+  /* Fonts */
+  --font-ui: 'IBM Plex Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'Consolas', monospace;
+
+  /* Strict Anti-SaaS Radii: Max 2px-4px */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+}
+
+[data-theme="light"] {
+  /* Crisp Engineering White Mode */
+  --bg-viewport: #FFFFFF;
+  --bg-panel: #F8FAFC;
+  --bg-surface: #F1F5F9;
+  --bg-surface-hover: #E2E8F0;
+  --bg-surface-active: #CBD5E1;
+
+  --border-hairline: #E2E8F0;
+  --border-subtle: #CBD5E1;
+  --border-focus: #0284C7;
+
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+
+  --accent-active: #16A34A;
+  --accent-active-dim: rgba(22, 163, 74, 0.14);
+  --accent-cyan: #0284C7;
+  --accent-cyan-dim: rgba(2, 132, 199, 0.14);
+  --accent-warning: #D97706;
+  --accent-warning-dim: rgba(217, 119, 6, 0.14);
+  --accent-danger: #DC2626;
+  --accent-danger-dim: rgba(220, 38, 38, 0.14);
+
+  --terminal-bg: #F1F5F9;
+  --terminal-text: #334155;
+  --input-bg: #FFFFFF;
+  --modal-overlay-bg: rgba(15, 23, 42, 0.45);
+  --switch-off-bg: #CBD5E1;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none !important; /* Strict Anti-SaaS: No drop shadows */
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-viewport);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* ==========================================================================
+   Docked Split-Pane Layout (Full Viewport, Hairline Dividers)
+   ========================================================================== */
+
+.workbench-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Top Navigation / Status Bar (44px) */
+.workbench-header {
+  height: 44px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 40;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.app-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.hairline-divider {
+  width: 1px;
+  height: 16px;
+  background-color: var(--border-hairline);
+  margin: 0 14px;
+}
+
+.header-status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-dot-6px {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-danger);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-dot-6px.online {
+  background-color: var(--accent-active);
+}
+
+.tag-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-surface);
+  color: var(--accent-cyan);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Precision Flat Button */
+.btn-bench {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.btn-bench:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-bench:active {
+  background: var(--bg-surface-active);
+}
+
+/* ==========================================================================
+   Main Docked Split View (Left 280px | Center Flex | Right 340px)
+   ========================================================================== */
+
+.workbench-main {
+  flex: 1;
+  display: flex;
+  width: 100vw;
+  height: calc(100vh - 44px);
+  overflow: hidden;
+}
+
+/* Standard Panel Header (36px flat bar) */
+.panel-bar {
+  height: 36px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.panel-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Left Panel: 280px Fixed Width */
+.panel-left {
+  width: 280px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.radar-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Edge-to-Edge Flat Radar Row */
+.radar-row {
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-panel);
+  transition: background 0.12s ease;
+}
+
+.radar-row:hover {
+  background: var(--bg-surface);
+}
+
+.radar-row.disabled {
+  opacity: 0.55;
+}
+
+.radar-row-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.radar-id-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.radar-orient-tag {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  margin-left: 6px;
+}
+
+.radar-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--accent-danger);
+}
+
+.radar-status-indicator.active {
+  color: var(--accent-active);
+}
+
+.radar-target-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.radar-target-counter span {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Flat Rectangular Switch (2px radius, no iOS pills) */
+.switch-flat {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.switch-flat input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-flat {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--switch-off-bg);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  transition: 0.15s;
+}
+
+.slider-flat:before {
+  position: absolute;
+  content: "";
+  height: 10px;
+  width: 12px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--text-secondary);
+  border-radius: 1px;
+  transition: 0.15s;
+}
+
+input:checked + .slider-flat {
+  background-color: var(--accent-active-dim);
+  border-color: var(--accent-active);
+}
+
+input:checked + .slider-flat:before {
+  transform: translateX(14px);
+  background-color: var(--accent-active);
+}
+
+/* Left Panel Lower Diagnostics */
+.panel-diagnostics {
+  margin-top: auto;
+  border-top: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+}
+
+.diag-section {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diag-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Segmented Control for Range Scale */
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.btn-seg {
+  height: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.btn-seg:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.btn-seg.active {
+  background: var(--accent-cyan-dim);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Readouts Grid */
+.diag-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.diag-grid span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Mini Event Terminal */
+.mini-terminal {
+  height: 100px;
+  background: var(--terminal-bg);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--terminal-text);
+  overflow-y: auto;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-top: 1px solid var(--border-hairline);
+}
+
+/* Center Panel: 360° Polar Radar Viewport & Data Flow Inspector */
+.panel-center {
+  flex: 1;
+  background: var(--bg-viewport);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Radar Selection Tab Strip (Precision Workbench Tabs) */
+.radar-tab-bar {
+  height: 36px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  width: 100%;
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.btn-radar-tab {
+  height: 100%;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn-radar-tab:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.btn-radar-tab.active {
+  background: var(--bg-surface);
+  color: var(--accent-cyan);
+  border-bottom: 2px solid var(--accent-cyan);
+}
+
+.tab-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-danger);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tab-indicator-dot.online {
+  background-color: var(--accent-active);
+}
+
+.tab-indicator-dot.dot-all {
+  background-color: var(--accent-cyan);
+}
+
+/* Live Serial Data Flow Confirmation Inspector */
+.data-flow-bar {
+  height: 28px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  width: 100%;
+  flex-shrink: 0;
+  overflow-x: auto;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.flow-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.flow-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.flow-val {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.flow-val.highlight {
+  color: var(--accent-cyan);
+}
+
+.flow-divider {
+  width: 1px;
+  height: 12px;
+  background: var(--border-hairline);
+}
+
+.flow-badge {
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flow-badge.status-active {
+  background: var(--accent-active-dim);
+  color: var(--accent-active);
+  border: 1px solid var(--accent-active);
+}
+
+.flow-badge.status-offline {
+  background: var(--accent-danger-dim);
+  color: var(--accent-danger);
+  border: 1px solid var(--accent-danger);
+}
+
+.flow-badge.status-idle {
+  background: var(--accent-warning-dim);
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
+}
+
+.canvas-viewport {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+canvas#radarCanvas {
+  display: block;
+}
+
+/* Overlay Toolbar (Docked Bottom-Left of Center Viewport) */
+.radar-overlay-toolbar {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+}
+
+.btn-tool-toggle {
+  height: 26px;
+  padding: 0 10px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.btn-tool-toggle:hover {
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.btn-tool-toggle.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: var(--accent-cyan-dim);
+}
+
+/* Right Panel: 340px Fixed Width (Live Target Telemetry) */
+.panel-right {
+  width: 340px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.table-viewport {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.telemetry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: left;
+}
+
+.telemetry-table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border-hairline);
+  font-size: 10px;
+  z-index: 10;
+}
+
+.telemetry-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border-hairline);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.telemetry-table tr:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.col-num {
+  text-align: right;
+}
+
+/* Zone Tags (2px radius flat engineering badges) */
+.zone-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.zone-tag.danger {
+  background: var(--accent-danger-dim);
+  color: var(--accent-danger);
+  border: 1px solid var(--accent-danger);
+}
+
+.zone-tag.warning {
+  background: var(--accent-warning-dim);
+  color: var(--accent-warning);
+  border: 1px solid var(--accent-warning);
+}
+
+.zone-tag.safe {
+  background: var(--accent-cyan-dim);
+  color: var(--accent-cyan);
+  border: 1px solid var(--accent-cyan);
+}
+
+/* ==========================================================================
+   Precision Dialogs / Modals
+   ========================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--modal-overlay-bg);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-bench {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  width: 860px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.modal-header-bench {
+  height: 38px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.modal-title-bench {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.modal-body-bench {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.modal-footer-bench {
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.radar-modal-card {
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.radar-modal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.radar-modal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .radar-modal-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+}
+
+.bench-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.bench-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bench-select, .bench-input {
+  height: 28px;
+  padding: 0 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.bench-select:focus, .bench-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-viewport);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
