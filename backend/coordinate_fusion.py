@@ -73,6 +73,21 @@ def classify_zone(range_m: float) -> str:
         return "SAFE"
 
 
+def set_zone_thresholds(danger_r: float, warning_r: float):
+    """Dynamically updates the spatial danger and warning thresholds across all radars."""
+    global DANGER_RADIUS, WARNING_RADIUS
+    DANGER_RADIUS = round(max(0.1, float(danger_r)), 2)
+    WARNING_RADIUS = round(max(DANGER_RADIUS, float(warning_r)), 2)
+
+
+def get_zone_thresholds() -> Dict[str, float]:
+    """Returns current active zone boundaries."""
+    return {
+        "danger_radius": DANGER_RADIUS,
+        "warning_radius": WARNING_RADIUS
+    }
+
+
 def determine_sector(azimuth_deg: float) -> str:
     """Returns the sector label based on azimuth."""
     if 300.0 <= azimuth_deg or azimuth_deg < 60.0:

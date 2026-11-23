@@ -12,8 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Initialize Live Target Telemetry Table
   const telemetryTable = new TelemetryTable('telemetryTableBody', 'targetCountBadge');
 
-  // 3. Initialize Sensor Controls & Diagnostics
-  const sensorControls = new SensorControlManager(circularPlot);
+  // Connect bidirectional target cross-highlighting
+  circularPlot.onTargetHoverCallback = (targetId) => {
+    telemetryTable.setHoveredRow(targetId);
+  };
+
+  telemetryTable.setOnRowHover((targetId) => {
+    circularPlot.setHoveredTarget(targetId);
+  });
+
+  // 3. Initialize Sensor Controls & Diagnostics (with circularPlot & telemetryTable)
+  const sensorControls = new SensorControlManager(circularPlot, telemetryTable);
 
   // 4. Initialize Hardware Modals
   const modals = new ConfigModalManager();
@@ -68,9 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (flowRadarName) {
         if (activeTab === 'all') flowRadarName.textContent = 'ALL 3 RADARS FUSED';
-        else if (activeTab === '1') flowRadarName.textContent = 'RADAR 1 (0° NORTH)';
-        else if (activeTab === '2') flowRadarName.textContent = 'RADAR 2 (120° S-EAST)';
-        else if (activeTab === '3') flowRadarName.textContent = 'RADAR 3 (240° S-WEST)';
+        else if (activeTab === '1') flowRadarName.textContent = 'RADAR 1 (0°–120°)';
+        else if (activeTab === '2') flowRadarName.textContent = 'RADAR 2 (120°–240°)';
+        else if (activeTab === '3') flowRadarName.textContent = 'RADAR 3 (240°–360°)';
       }
 
       const label = activeTab === 'all' ? 'ALL RADARS' : `RADAR ${activeTab}`;
@@ -87,19 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!payload || !payload.sensors) return;
     const sensors = payload.sensors;
 
-    // Update tab status dots for radars 1, 2, 3
+    // Update tab status dots for radars 1, 2, 3 with automotive sensor colors
+    const sensorColors = { 1: '#00E5FF', 2: '#B56CFF', 3: '#FFB52E' };
     [1, 2, 3].forEach(sid => {
       const s = sensors[`sensor${sid}`];
       const dot = tabDots[sid];
       if (dot && s) {
         if (s.flow_active) {
           dot.className = 'tab-indicator-dot online';
+          dot.style.backgroundColor = sensorColors[sid];
+          dot.style.boxShadow = `0 0 6px ${sensorColors[sid]}`;
         } else if (s.status === 'CONNECTED') {
           dot.className = 'tab-indicator-dot';
           dot.style.backgroundColor = 'var(--accent-warning)';
+          dot.style.boxShadow = 'none';
         } else {
           dot.className = 'tab-indicator-dot';
           dot.style.backgroundColor = 'var(--accent-danger)';
+          dot.style.boxShadow = 'none';
         }
       }
     });

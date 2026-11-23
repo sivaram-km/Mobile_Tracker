@@ -3,8 +3,9 @@
  * Precision Engineering Workbench Implementation
  */
 class SensorControlManager {
-  constructor(plotInstance) {
+  constructor(plotInstance, telemetryTableInstance = null) {
     this.plot = plotInstance;
+    this.table = telemetryTableInstance;
     this.sensorCards = {
       1: document.getElementById('sensorCard1'),
       2: document.getElementById('sensorCard2'),
@@ -24,8 +25,10 @@ class SensorControlManager {
     this.terminalEl = document.getElementById('miniTerminalLog');
 
     this.initToggles();
+    this.initSettingsPopover();
     this.initRangeScale();
     this.initOverlayTools();
+    this.initZoneControls();
   }
 
   logTerminal(msg) {
@@ -34,6 +37,38 @@ class SensorControlManager {
     const timeStr = now.toTimeString().split(' ')[0];
     this.terminalEl.textContent += `\n[${timeStr}] ${msg}`;
     this.terminalEl.scrollTop = this.terminalEl.scrollHeight;
+  }
+
+  initSettingsPopover() {
+    const btnSettings = document.getElementById('btnSettings');
+    const popover = document.getElementById('settingsPopover');
+    const btnClose = document.getElementById('btnCloseSettings');
+
+    if (btnSettings && popover) {
+      btnSettings.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popover.classList.toggle('open');
+      });
+
+      if (btnClose) {
+        btnClose.addEventListener('click', (e) => {
+          e.stopPropagation();
+          popover.classList.remove('open');
+        });
+      }
+
+      // Close when clicking outside the popover
+      document.addEventListener('click', (e) => {
+        if (!popover.contains(e.target) && e.target !== btnSettings && !btnSettings.contains(e.target)) {
+          popover.classList.remove('open');
+        }
+      });
+
+      // Prevent clicks inside popover from propagating to document
+      popover.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
   }
 
   initToggles() {
@@ -65,10 +100,155 @@ class SensorControlManager {
           });
           btn.classList.add('active');
           this.plot.setRangeScale(s.range);
+
+          // Update numeric input max bounds to match active range scale
+          const inputDanger = document.getElementById('inputDangerZone');
+          const inputWarm = document.getElementById('inputWarmZone');
+          if (inputDanger && inputWarm) {
+            inputDanger.max = (s.range - 0.5).toFixed(1);
+            inputWarm.max = (s.range - 0.2).toFixed(1);
+
+            let d = parseFloat(inputDanger.value);
+            let w = parseFloat(inputWarm.value);
+            if (w > s.range) {
+              w = s.range * 0.4;
+              inputWarm.value = w.toFixed(1);
+            }
+            if (d >= w) {
+              d = w * 0.5;
+              inputDanger.value = d.toFixed(1);
+            }
+            this.plot.setCustomZones(d, w);
+            if (this.table) this.table.setZoneThresholds(d, w);
+          }
+
           this.logTerminal(`Range scale adjusted to ${s.range}m.`);
         });
       }
     });
+  }
+
+  initZoneControls() {
+    const inputDanger = document.getElementById('inputDangerZone');
+    const inputWarm = document.getElementById('inputWarmZone');
+    const btnReset = document.getElementById('btnResetZones');
+    const btnApply = document.getElementById('btnApplyZones');
+
+    const onDangerChange = () => {
+      if (!inputDanger || !inputWarm) return;
+      let d = parseFloat(inputDanger.value);
+      let w = parseFloat(inputWarm.value);
+      if (isNaN(d) || d <= 0) d = 0.5;
+      if (isNaN(w) || w <= 0) w = 1.0;
+      if (d >= w) {
+        w = d + 0.2;
+        inputWarm.value = w.toFixed(1);
+      }
+      this.plot.setCustomZones(d, w);
+      if (this.table) this.table.setZoneThresholds(d, w);
+    };
+
+    const onWarmChange = () => {
+      if (!inputDanger || !inputWarm) return;
+      let d = parseFloat(inputDanger.value);
+      let w = parseFloat(inputWarm.value);
+      if (isNaN(w) || w <= 0) w = 1.0;
+      if (isNaN(d) || d <= 0) d = 0.5;
+      if (w <= d) {
+        d = Math.max(0.1, w - 0.2);
+        inputDanger.value = d.toFixed(1);
+      }
+      this.plot.setCustomZones(d, w);
+      if (this.table) this.table.setZoneThresholds(d, w);
+    };
+
+    if (inputDanger) {
+      inputDanger.addEventListener('input', onDangerChange);
+      inputDanger.addEventListener('change', onDangerChange);
+    }
+
+    if (inputWarm) {
+      inputWarm.addEventListener('input', onWarmChange);
+      inputWarm.addEventListener('change', onWarmChange);
+    }
+
+    // Apply button: Commits entered threshold numbers to backend API
+    if (btnApply) {
+      btnApply.addEventListener('click', async () => {
+        let d = parseFloat(inputDanger ? inputDanger.value : 2.0);
+        let w = parseFloat(inputWarm ? inputWarm.value : 4.0);
+        if (isNaN(d) || d <= 0) d = 2.0;
+        if (isNaN(w) || w <= 0) w = 4.0;
+        if (d >= w) {
+          w = d + 0.2;
+          if (inputWarm) inputWarm.value = w.toFixed(1);
+        }
+
+        try {
+          const resp = await fetch('/api/zone/thresholds', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ danger_radius: d, warning_radius: w })
+          });
+          const data = await resp.json();
+          const origText = btnApply.textContent;
+          btnApply.textContent = 'APPLIED!';
+          btnApply.style.borderColor = 'var(--accent-active)';
+          btnApply.style.color = 'var(--accent-active)';
+          setTimeout(() => {
+            btnApply.textContent = origText;
+            btnApply.style.borderColor = '';
+            btnApply.style.color = '';
+          }, 1200);
+          this.logTerminal(`Zone thresholds applied: Danger <= ${d.toFixed(1)}m, Warm <= ${w.toFixed(1)}m.`);
+        } catch (err) {
+          console.error('Failed to update zone thresholds:', err);
+          this.logTerminal(`Error saving zone thresholds: ${err.message}`);
+        }
+      });
+    }
+
+    // Reset button: Restores defaults (Danger: 2.0m, Warm: 4.0m)
+    if (btnReset) {
+      btnReset.addEventListener('click', async () => {
+        const defDanger = 2.0;
+        const defWarm = 4.0;
+        if (inputDanger) inputDanger.value = defDanger.toFixed(1);
+        if (inputWarm) inputWarm.value = defWarm.toFixed(1);
+
+        this.plot.setCustomZones(defDanger, defWarm);
+        if (this.table) this.table.setZoneThresholds(defDanger, defWarm);
+
+        try {
+          await fetch('/api/zone/thresholds', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ danger_radius: defDanger, warning_radius: defWarm })
+          });
+          const origText = btnReset.textContent;
+          btnReset.textContent = 'RESET!';
+          setTimeout(() => { btnReset.textContent = origText; }, 1000);
+          this.logTerminal(`Zone thresholds reset to default: Danger <= ${defDanger.toFixed(1)}m, Warm <= ${defWarm.toFixed(1)}m.`);
+        } catch (err) {
+          console.error('Failed to reset zone thresholds:', err);
+        }
+      });
+    }
+
+    // Synchronize initial values from backend on page load
+    fetch('/api/zone/thresholds')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.danger_radius !== undefined && data.warning_radius !== undefined) {
+          const d = parseFloat(data.danger_radius);
+          const w = parseFloat(data.warning_radius);
+          if (inputDanger) inputDanger.value = d.toFixed(1);
+          if (inputWarm) inputWarm.value = w.toFixed(1);
+          this.plot.setCustomZones(d, w);
+          if (this.table) this.table.setZoneThresholds(d, w);
+        }
+      })
+      .catch(() => { });
   }
 
   initOverlayTools() {

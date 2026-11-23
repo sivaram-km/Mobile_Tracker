@@ -219,6 +219,30 @@ async def toggle_sensor_stream(req: SensorToggleRequest):
     return {"status": "success", "sensor_id": req.sensor_id, "enabled": req.enabled}
 
 
+class ZoneThresholdsRequest(BaseModel):
+    danger_radius: float
+    warning_radius: float
+
+
+@app.get("/api/zone/thresholds")
+async def get_thresholds():
+    """Returns real-time spatial zone distance thresholds in meters."""
+    from coordinate_fusion import get_zone_thresholds
+    return get_zone_thresholds()
+
+
+@app.post("/api/zone/thresholds")
+async def update_thresholds(req: ZoneThresholdsRequest):
+    """Updates spatial danger and warning thresholds dynamically across all 3 radars."""
+    from coordinate_fusion import set_zone_thresholds
+    set_zone_thresholds(req.danger_radius, req.warning_radius)
+    return {
+        "status": "success",
+        "danger_radius": req.danger_radius,
+        "warning_radius": req.warning_radius
+    }
+
+
 # Mount Frontend Static Directory
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
 if os.path.exists(frontend_dir):
