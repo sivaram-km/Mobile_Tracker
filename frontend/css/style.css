@@ -89,12 +89,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-shadow: none !important;
-  /* Strict Anti-SaaS: No drop shadows */
+  box-shadow: none !important; /* Strict Anti-SaaS: No drop shadows */
 }
 
-html,
-body {
+html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
@@ -391,10 +389,7 @@ body {
 
 .slider-flat {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: var(--switch-off-bg);
   border: 1px solid var(--border-hairline);
   border-radius: var(--radius-xs);
@@ -413,12 +408,12 @@ body {
   transition: 0.15s;
 }
 
-input:checked+.slider-flat {
+input:checked + .slider-flat {
   background-color: var(--accent-active-dim);
   border-color: var(--accent-active);
 }
 
-input:checked+.slider-flat:before {
+input:checked + .slider-flat:before {
   transform: translateX(14px);
   background-color: var(--accent-active);
 }
@@ -556,15 +551,8 @@ input:checked+.slider-flat:before {
 }
 
 @keyframes popoverFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .settings-popover-header {
@@ -1282,8 +1270,7 @@ canvas#radarCanvas {
   text-overflow: ellipsis;
 }
 
-.bench-select,
-.bench-input {
+.bench-select, .bench-input {
   height: 28px;
   padding: 0 8px;
   background: var(--input-bg);
@@ -1302,8 +1289,7 @@ canvas#radarCanvas {
   cursor: pointer;
 }
 
-.bench-select:focus,
-.bench-input:focus {
+.bench-select:focus, .bench-input:focus {
   outline: none;
   border-color: var(--accent-cyan);
 }
