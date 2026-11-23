@@ -568,13 +568,13 @@ class CircularPlot {
       ctx.fillText(text, pos.x, pos.y + 0.5);
     });
 
-    // 2. Position Zone indicator badges along the 60° radial axis (completely decoupled from Range labels!)
-    const pillBg = this.theme === 'light' ? 'rgba(255, 255, 255, 0.94)' : 'rgba(7, 11, 20, 0.94)';
+    // 2. Position Zone indicator badges along decoupled radial axes (0 collisions with Range markings or Sector labels!)
+    const pillBg = this.theme === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(7, 11, 20, 0.95)';
 
-    // DANGER Zone Badge (#FF4545)
-    const dangerPos = this.polarToCanvas(this.dangerRadius, 60);
+    // DANGER Zone Badge (#FF4545) along 45° Northeast axis
+    const dangerPos = this.polarToCanvas(this.dangerRadius, 45);
     const dangerText = `DANGER ${this.dangerRadius.toFixed(1)}m`;
-    ctx.font = '700 8px var(--font-mono)';
+    ctx.font = '700 8.5px var(--font-mono)';
     const dtw = ctx.measureText(dangerText).width;
     const dpw = dtw + 8;
     const dph = 14;
@@ -592,10 +592,10 @@ class CircularPlot {
     ctx.textBaseline = 'middle';
     ctx.fillText(dangerText, dangerPos.x, dangerPos.y + 0.5);
 
-    // WARM Zone Badge (#FFB52E)
-    const warnPos = this.polarToCanvas(this.warningRadius, 60);
+    // WARM Zone Badge (#FFB52E) along 135° Southeast axis
+    const warnPos = this.polarToCanvas(this.warningRadius, 135);
     const warnText = `WARM ${this.warningRadius.toFixed(1)}m`;
-    ctx.font = '700 8px var(--font-mono)';
+    ctx.font = '700 8.5px var(--font-mono)';
     const wtw = ctx.measureText(warnText).width;
     const wpw = wtw + 8;
     const wph = 14;
@@ -613,12 +613,12 @@ class CircularPlot {
     ctx.textBaseline = 'middle';
     ctx.fillText(warnText, warnPos.x, warnPos.y + 0.5);
 
-    // SAFE Zone Badge (#22C55E)
+    // SAFE Zone Badge (#22C55E) along 225° Southwest axis
     const safeRadius = (this.warningRadius + this.maxRange) / 2;
-    if (this.maxRange - this.warningRadius >= 1.0) {
-      const safePos = this.polarToCanvas(safeRadius, 60);
+    if (this.maxRange - this.warningRadius >= 0.8) {
+      const safePos = this.polarToCanvas(safeRadius, 225);
       const safeText = 'SAFE';
-      ctx.font = '700 8px var(--font-mono)';
+      ctx.font = '700 8.5px var(--font-mono)';
       const stw = ctx.measureText(safeText).width;
       const spw = stw + 8;
       const sph = 14;
@@ -642,9 +642,9 @@ class CircularPlot {
     const ctx = this.ctx;
     const r = this.plotRadius;
 
-    // Hairline boresight line pointing North (0°)
+    // Hairline boresight line pointing North (0°) from center hub to outer perimeter
     ctx.beginPath();
-    ctx.moveTo(this.cx, this.cy);
+    ctx.moveTo(this.cx, this.cy - 22);
     ctx.lineTo(this.cx, this.cy - r);
     ctx.strokeStyle = this.colors.cyan;
     ctx.lineWidth = 1.2;

@@ -85,9 +85,9 @@ class SensorControlManager {
 
   initRangeScale() {
     const scales = [
-      { id: 'btnRange5m', range: 5.0 },
-      { id: 'btnRange10m', range: 10.0 },
-      { id: 'btnRange15m', range: 15.0 }
+      { id: 'btnRange5m', range: 5.0, danger: 1.0, warm: 2.5 },
+      { id: 'btnRange10m', range: 10.0, danger: 2.0, warm: 4.0 },
+      { id: 'btnRange15m', range: 15.0, danger: 3.0, warm: 6.0 }
     ];
 
     scales.forEach(s => {
@@ -101,28 +101,28 @@ class SensorControlManager {
           btn.classList.add('active');
           this.plot.setRangeScale(s.range);
 
-          // Update numeric input max bounds to match active range scale
+          // Update numeric input fields and bounds to match active range scale
           const inputDanger = document.getElementById('inputDangerZone');
           const inputWarm = document.getElementById('inputWarmZone');
           if (inputDanger && inputWarm) {
             inputDanger.max = (s.range - 0.5).toFixed(1);
             inputWarm.max = (s.range - 0.2).toFixed(1);
 
-            let d = parseFloat(inputDanger.value);
-            let w = parseFloat(inputWarm.value);
-            if (w > s.range) {
-              w = s.range * 0.4;
-              inputWarm.value = w.toFixed(1);
-            }
-            if (d >= w) {
-              d = w * 0.5;
-              inputDanger.value = d.toFixed(1);
-            }
-            this.plot.setCustomZones(d, w);
-            if (this.table) this.table.setZoneThresholds(d, w);
+            inputDanger.value = s.danger.toFixed(1);
+            inputWarm.value = s.warm.toFixed(1);
+
+            this.plot.setCustomZones(s.danger, s.warm);
+            if (this.table) this.table.setZoneThresholds(s.danger, s.warm);
+
+            // Sync with backend API
+            fetch('/api/zone/thresholds', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ danger_radius: s.danger, warning_radius: s.warm })
+            }).catch(() => {});
           }
 
-          this.logTerminal(`Range scale adjusted to ${s.range}m.`);
+          this.logTerminal(`Range scale adjusted to ${s.range}m (Zones: Danger ${s.danger}m, Warm ${s.warm}m).`);
         });
       }
     });
