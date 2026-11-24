@@ -705,30 +705,13 @@ class CircularPlot {
       const outerX = this.cx + 22 * Math.cos(rad);
       const outerY = this.cy + 22 * Math.sin(rad);
 
+      // Directional Sensor Tick Mark
       ctx.beginPath();
       ctx.moveTo(innerX, innerY);
       ctx.lineTo(outerX, outerY);
       ctx.strokeStyle = this.colors.cyan;
       ctx.lineWidth = 1.5;
       ctx.stroke();
-
-      // Micro Sensor Label with protective knockout circle
-      const lx = this.cx + 28 * Math.cos(rad);
-      const ly = this.cy + 28 * Math.sin(rad);
-
-      ctx.fillStyle = this.colors.bg;
-      ctx.beginPath();
-      ctx.arc(lx, ly, 7, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = this.colors.spokeMajor;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      ctx.font = '700 8px var(--font-mono)';
-      ctx.fillStyle = this.colors.cyan;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(item.label, lx, ly + 0.5);
     });
 
     // Central core origin dot

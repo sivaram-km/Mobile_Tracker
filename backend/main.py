@@ -2,15 +2,18 @@ import os
 import sys
 import json
 import asyncio
+import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+
+logger = logging.getLogger("radar_backend")
 
 # Ensure backend directory is in path for module resolution
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
