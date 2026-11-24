@@ -11,6 +11,7 @@ class ViewManager {
 
     this.activeView = 'live-monitor';
     this.activeRadarSubTab = 'all';
+    this.activeRangeScale = 10.0;
     this.trackingFilter = 'all'; // 'all', '1', '2', '3', 'dyn', 'static'
     this.dangerThreshold = 2.0;
     this.warmThreshold = 4.0;
@@ -26,6 +27,7 @@ class ViewManager {
     this.initTrackingFilters();
     this.initAuditLogs();
     this.initClock();
+    setTimeout(() => this.refreshRadarConfigView(), 100);
   }
 
   // 1. Navigation View Switching
@@ -94,7 +96,11 @@ class ViewManager {
     // View-specific initialization triggers
     if (viewId === 'live-monitor') {
       setTimeout(() => {
-        if (this.circularPlot) this.circularPlot.resize();
+        if (this.circularPlot) {
+          this.circularPlot.setRangeScale(this.activeRangeScale || 10.0);
+          this.circularPlot.setCustomZones(this.dangerThreshold || 2.0, this.warmThreshold || 4.0);
+          this.circularPlot.resize();
+        }
       }, 50);
     } else if (viewId === 'radar-config') {
       this.refreshRadarConfigView();
@@ -102,6 +108,7 @@ class ViewManager {
       this.loadMountingMatrix();
     } else if (viewId === 'zone-settings') {
       this.syncZoneInputs();
+      setTimeout(() => this.drawZonePreviewCanvas(), 30);
     }
   }
 
@@ -407,6 +414,25 @@ class ViewManager {
     }
   }
 
+  // Helper to extract currently selected ports & common config across all 3 radars
+  getRadarsPayload() {
+    const cfgName = (document.getElementById('bcastCfgSelect') || {}).value || 'AOP_6m_default.cfg';
+    const c1 = (document.getElementById('bcastCliSelect1') || {}).value || '/dev/ttyUSB0';
+    const d1 = (document.getElementById('bcastDataSelect1') || {}).value || '/dev/ttyUSB1';
+    const c2 = (document.getElementById('bcastCliSelect2') || {}).value || '/dev/ttyUSB2';
+    const d2 = (document.getElementById('bcastDataSelect2') || {}).value || '/dev/ttyUSB3';
+    const c3 = (document.getElementById('bcastCliSelect3') || {}).value || '/dev/ttyUSB4';
+    const d3 = (document.getElementById('bcastDataSelect3') || {}).value || '/dev/ttyUSB5';
+
+    return {
+      radars: [
+        { sensor_id: 1, cli_port: c1, data_port: d1, config: cfgName },
+        { sensor_id: 2, cli_port: c2, data_port: d2, config: cfgName },
+        { sensor_id: 3, cli_port: c3, data_port: d3, config: cfgName }
+      ]
+    };
+  }
+
   // 3. Live Monitor Execution Controls (START/STOP)
   initLiveMonitorControls() {
     const btnStart = document.getElementById('btnStartRadarsLive');
@@ -414,21 +440,15 @@ class ViewManager {
       btnStart.addEventListener('click', async () => {
         try {
           btnStart.textContent = 'CONNECTING...';
-          const defaultPayload = {
-            radars: [
-              { sensor_id: 1, cli_port: "/dev/ttyUSB0", data_port: "/dev/ttyUSB1", config: "AOP_6m_default.cfg" },
-              { sensor_id: 2, cli_port: "/dev/ttyUSB2", data_port: "/dev/ttyUSB3", config: "AOP_6m_default.cfg" },
-              { sensor_id: 3, cli_port: "/dev/ttyUSB4", data_port: "/dev/ttyUSB5", config: "AOP_6m_default.cfg" }
-            ]
-          };
+          const payload = this.getRadarsPayload();
 
           const res = await fetch('/api/radar/start', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(defaultPayload)
+            body: JSON.stringify(payload)
           });
           const data = await res.json();
-          this.logAudit('SYSTEM', 'RADAR FUSION', 'Start radar connection dispatched across all 3 sensors.');
+          this.logAudit('SYSTEM', 'RADAR FUSION', 'Start radar connection dispatched across all 3 sensors using configured ports.');
         } catch (e) {
           console.error('Error starting radars:', e);
         } finally {
@@ -457,32 +477,46 @@ class ViewManager {
       btnScan.addEventListener('click', async () => {
         btnScan.textContent = 'SCANNING...';
         await this.refreshRadarConfigView();
-        btnScan.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> SCAN ALL PORTS`;
-        this.logAudit('SYSTEM', 'RADAR CONFIG', 'Port scan completed across physical bus.');
+        btnScan.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> SCAN / AUTO-DETECT PORTS`;
+        this.logAudit('SYSTEM', 'RADAR CONFIG', 'Port scan completed across physical bus. Ports auto-detected and assigned.');
       });
     }
 
     const btnConnect = document.getElementById('btnBroadcastConnect');
     if (btnConnect) {
-      btnConnect.addEventListener('click', () => {
-        const btnStart = document.getElementById('btnStartRadarsLive');
-        if (btnStart) btnStart.click();
+      btnConnect.addEventListener('click', async () => {
+        btnConnect.textContent = 'CONNECTING...';
+        try {
+          const payload = this.getRadarsPayload();
+          await fetch('/api/radar/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          this.logAudit('SYSTEM', 'RADAR CONFIG', 'Connected all 3 radars with selected ports.');
+          setTimeout(() => this.refreshRadarConfigView(), 500);
+        } catch (e) {
+          console.error('Connect error:', e);
+        } finally {
+          btnConnect.textContent = 'CONNECT ALL 3';
+        }
       });
     }
 
     const btnDisconnect = document.getElementById('btnBroadcastDisconnect');
     if (btnDisconnect) {
-      btnDisconnect.addEventListener('click', () => {
+      btnDisconnect.addEventListener('click', async () => {
         const btnStop = document.getElementById('btnStopRadarsLive');
         if (btnStop) btnStop.click();
+        setTimeout(() => this.refreshRadarConfigView(), 500);
       });
     }
 
     const btnStart3 = document.getElementById('btnBroadcastStart');
     if (btnStart3) {
       btnStart3.addEventListener('click', () => {
-        const btnStart = document.getElementById('btnStartRadarsLive');
-        if (btnStart) btnStart.click();
+        const btnConn = document.getElementById('btnBroadcastConnect');
+        if (btnConn) btnConn.click();
       });
     }
 
@@ -494,12 +528,50 @@ class ViewManager {
       });
     }
 
+    // Common Config Selector Change: update common raw editor
+    const bcastCfg = document.getElementById('bcastCfgSelect');
+    if (bcastCfg) {
+      bcastCfg.addEventListener('change', () => {
+        this.loadBroadcastConfigContent(bcastCfg.value);
+      });
+    }
+
+    // Common Config Save Button
+    const btnSaveCfg = document.getElementById('btnBroadcastSaveCfg');
+    if (btnSaveCfg) {
+      btnSaveCfg.addEventListener('click', async () => {
+        const sel = document.getElementById('bcastCfgSelect');
+        const editor = document.getElementById('bcastCfgEditor');
+        const filename = sel ? sel.value : 'AOP_6m_default.cfg';
+        const content = editor ? editor.value : '';
+        btnSaveCfg.textContent = 'SAVING...';
+        try {
+          await fetch('/api/config/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename, content })
+          });
+          const ack = document.getElementById('bcastAckStatus');
+          if (ack) {
+            ack.textContent = `✓ Config ${filename} saved successfully.`;
+            ack.style.color = 'var(--accent-active)';
+          }
+          this.logAudit('SYSTEM', 'RADAR CONFIG', `Saved common configuration ${filename}.`);
+        } catch (e) {
+          console.warn('Save config error:', e);
+        } finally {
+          btnSaveCfg.textContent = 'Save CFG';
+        }
+      });
+    }
+
+    // Broadcast Common Config Button
     const btnBcastCfg = document.getElementById('btnBroadcastCfg');
     if (btnBcastCfg) {
       btnBcastCfg.addEventListener('click', async () => {
         const sel = document.getElementById('bcastCfgSelect');
         const cfgName = sel ? sel.value : 'AOP_6m_default.cfg';
-        btnBcastCfg.textContent = 'BROADCASTING...';
+        btnBcastCfg.textContent = 'APPLYING TO ALL 3...';
 
         try {
           const res = await fetch('/api/radar/broadcast_config', {
@@ -509,16 +581,30 @@ class ViewManager {
           });
           const ackStatus = document.getElementById('bcastAckStatus');
           if (ackStatus) {
-            ackStatus.textContent = `✓ Broadcast ACK: 100% (All 3 radars configured with ${cfgName})`;
+            ackStatus.textContent = `✓ Applied ${cfgName} simultaneously to Radars 1, 2, and 3.`;
             ackStatus.style.color = 'var(--accent-active)';
           }
-          this.logAudit('SYSTEM', 'RADAR BROADCAST', `Configuration ${cfgName} dispatched to Sensors 1, 2, and 3.`);
+          this.logAudit('SYSTEM', 'RADAR BROADCAST', `Common configuration ${cfgName} applied to all 3 sensors.`);
         } catch (e) {
           console.warn('Broadcast config error:', e);
         } finally {
-          btnBcastCfg.textContent = '⚡ BROADCAST CFG TO ALL 3 RADARS';
+          btnBcastCfg.textContent = '⚡ APPLY CFG TO ALL 3 RADARS';
         }
       });
+    }
+  }
+
+  async loadBroadcastConfigContent(filename) {
+    const editor = document.getElementById('bcastCfgEditor');
+    if (!editor) return;
+    try {
+      const res = await fetch(`/api/config/content?name=${encodeURIComponent(filename)}`);
+      const data = await res.json();
+      if (data.content) {
+        editor.value = data.content;
+      }
+    } catch (e) {
+      console.warn('Failed loading broadcast cfg content:', e);
     }
   }
 
@@ -534,13 +620,64 @@ class ViewManager {
       const configsData = await configsRes.json();
       const statusData = await statusRes.json();
 
-      // Populate broadcast config dropdown
+      // 1. Populate broadcast config dropdown
       const bcastCfg = document.getElementById('bcastCfgSelect');
       if (bcastCfg && configsData.configs) {
+        const curCfg = bcastCfg.value;
         bcastCfg.innerHTML = configsData.configs.map(c => `<option value="${c}">${c}</option>`).join('');
+        if (curCfg && configsData.configs.includes(curCfg)) {
+          bcastCfg.value = curCfg;
+        }
+        this.loadBroadcastConfigContent(bcastCfg.value);
       }
 
-      // Update state cards for Sensors 1, 2, 3
+      // 2. Process and auto-detect ports
+      let detectedPorts = (portsData.ports || []).map(p => typeof p === 'string' ? p : p.device);
+      const usbPorts = detectedPorts.filter(p => /ttyUSB|ttyACM|COM/i.test(p));
+      const otherPorts = detectedPorts.filter(p => !/ttyUSB|ttyACM|COM/i.test(p));
+
+      // Standard USB fallback list
+      const fallbackPorts = [
+        '/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/ttyUSB2',
+        '/dev/ttyUSB3', '/dev/ttyUSB4', '/dev/ttyUSB5',
+        '/dev/ttyACM0', '/dev/ttyACM1', '/dev/ttyACM2'
+      ];
+      const allPortOptions = Array.from(new Set([...usbPorts, ...fallbackPorts, ...otherPorts]));
+
+      // Populate port dropdowns for Radars 1, 2, 3
+      const portFields = [
+        { id: 'bcastCliSelect1', tagId: 'bcastCliTag1', def: usbPorts[0] || '/dev/ttyUSB0', isDet: !!usbPorts[0] },
+        { id: 'bcastDataSelect1', tagId: 'bcastDataTag1', def: usbPorts[1] || '/dev/ttyUSB1', isDet: !!usbPorts[1] },
+        { id: 'bcastCliSelect2', tagId: 'bcastCliTag2', def: usbPorts[2] || '/dev/ttyUSB2', isDet: !!usbPorts[2] },
+        { id: 'bcastDataSelect2', tagId: 'bcastDataTag2', def: usbPorts[3] || '/dev/ttyUSB3', isDet: !!usbPorts[3] },
+        { id: 'bcastCliSelect3', tagId: 'bcastCliTag3', def: usbPorts[4] || '/dev/ttyUSB4', isDet: !!usbPorts[4] },
+        { id: 'bcastDataSelect3', tagId: 'bcastDataTag3', def: usbPorts[5] || '/dev/ttyUSB5', isDet: !!usbPorts[5] }
+      ];
+
+      portFields.forEach(pf => {
+        const el = document.getElementById(pf.id);
+        const tag = document.getElementById(pf.tagId);
+        if (el) {
+          const curVal = el.value;
+          el.innerHTML = allPortOptions.map(p => {
+            const isDetected = usbPorts.includes(p);
+            return `<option value="${p}">${isDetected ? '⚡ ' + p + ' (Detected)' : p}</option>`;
+          }).join('');
+
+          if (curVal && allPortOptions.includes(curVal)) {
+            el.value = curVal;
+          } else {
+            el.value = pf.def;
+          }
+
+          if (tag) {
+            tag.textContent = pf.isDet ? 'AUTO-DETECTED' : 'CONFIGURED';
+            tag.style.color = pf.isDet ? 'var(--accent-active)' : 'var(--text-muted)';
+          }
+        }
+      });
+
+      // 3. Update state cards for Sensors 1, 2, 3
       if (statusData.sensors) {
         [1, 2, 3].forEach(sid => {
           const s = statusData.sensors[`sensor${sid}`];
@@ -567,50 +704,66 @@ class ViewManager {
     const btnApply = document.getElementById('btnApplyZonesDirect');
     const btnReset = document.getElementById('btnResetZonesDirect');
 
-    const updatePreviewRings = () => {
-      const d = parseFloat(inpDanger.value) || 2.0;
-      const w = parseFloat(inpWarm.value) || 4.0;
-      const maxR = 10.0;
+    const updatePreviewAndLiveSync = () => {
+      const activeScale = this.activeRangeScale || 10.0;
+      let d = parseFloat(inpDanger ? inpDanger.value : 2.0);
+      let w = parseFloat(inpWarm ? inpWarm.value : 4.0);
+      if (isNaN(d) || d < 0.1) d = 0.5;
+      if (isNaN(w) || w < 0.2) w = 1.0;
 
-      const ringDanger = document.getElementById('previewRingDanger');
-      const ringWarm = document.getElementById('previewRingWarm');
-      const badgeDanger = document.getElementById('previewBadgeDanger');
-      const badgeWarm = document.getElementById('previewBadgeWarm');
-      const labelSafe = document.getElementById('labelSafeThresholdDirect');
+      // Don't let thresholds exceed the active range scale
+      if (w > activeScale) w = activeScale;
+      if (d > activeScale - 0.2) d = activeScale - 0.2;
 
-      if (ringDanger) {
-        const px = Math.min(260, Math.max(30, (d / maxR) * 260));
-        ringDanger.style.width = px + 'px';
-        ringDanger.style.height = px + 'px';
-      }
-      if (ringWarm) {
-        const px = Math.min(260, Math.max(50, (w / maxR) * 260));
-        ringWarm.style.width = px + 'px';
-        ringWarm.style.height = px + 'px';
-      }
-      if (badgeDanger) badgeDanger.textContent = `DANGER ${d.toFixed(1)}m`;
-      if (badgeWarm) badgeWarm.textContent = `WARM ${w.toFixed(1)}m`;
-      if (labelSafe) labelSafe.textContent = `> ${w.toFixed(1)} m`;
+      this.dangerThreshold = d;
+      this.warmThreshold = w;
+
+      if (this.circularPlot) this.circularPlot.setCustomZones(d, w);
+      if (this.telemetryTable) this.telemetryTable.setZoneThresholds(d, w);
+      this.drawZonePreviewCanvas();
     };
 
-    if (inpDanger && inpWarm) {
-      inpDanger.addEventListener('input', updatePreviewRings);
-      inpWarm.addEventListener('input', updatePreviewRings);
+    if (inpDanger) {
+      ['input', 'change', 'keyup', 'paste', 'wheel'].forEach(evt => {
+        inpDanger.addEventListener(evt, updatePreviewAndLiveSync);
+      });
+    }
+
+    if (inpWarm) {
+      ['input', 'change', 'keyup', 'paste', 'wheel'].forEach(evt => {
+        inpWarm.addEventListener(evt, updatePreviewAndLiveSync);
+      });
     }
 
     if (btnApply) {
       btnApply.addEventListener('click', async () => {
-        const d = parseFloat(inpDanger.value) || 2.0;
-        const w = parseFloat(inpWarm.value) || 4.0;
+        let d = parseFloat(inpDanger ? inpDanger.value : 2.0) || 2.0;
+        let w = parseFloat(inpWarm ? inpWarm.value : 4.0) || 4.0;
         await this.applyThresholds(d, w);
+        this.drawZonePreviewCanvas();
+        btnApply.textContent = '✓ APPLIED';
+        btnApply.style.borderColor = 'var(--accent-active)';
+        btnApply.style.color = 'var(--accent-active)';
+        setTimeout(() => {
+          btnApply.textContent = 'APPLY THRESHOLDS';
+          btnApply.style.borderColor = '';
+          btnApply.style.color = '';
+        }, 1200);
       });
     }
 
     if (btnReset) {
       btnReset.addEventListener('click', async () => {
+        this.activeRangeScale = 10.0;
+        this.dangerThreshold = 2.0;
+        this.warmThreshold = 4.0;
         if (inpDanger) inpDanger.value = '2.0';
         if (inpWarm) inpWarm.value = '4.0';
-        updatePreviewRings();
+        this.syncZoneInputs();
+        if (this.circularPlot) {
+          this.circularPlot.setRangeScale(10.0);
+          this.circularPlot.setCustomZones(2.0, 4.0);
+        }
         await this.applyThresholds(2.0, 4.0);
       });
     }
@@ -630,29 +783,34 @@ class ViewManager {
             if (bEl) bEl.classList.remove('active');
           });
           el.classList.add('active');
+          this.activeRangeScale = sb.val;
 
-          // Directly update live monitoring circular plot engine
+          // Adjust numeric threshold constraints if they exceed the new range scale
+          if (this.warmThreshold >= sb.val) {
+            this.warmThreshold = parseFloat((sb.val * 0.4).toFixed(1));
+            if (inpWarm) inpWarm.value = this.warmThreshold.toFixed(1);
+          }
+          if (this.dangerThreshold >= this.warmThreshold) {
+            this.dangerThreshold = parseFloat((this.warmThreshold * 0.5).toFixed(1));
+            if (inpDanger) inpDanger.value = this.dangerThreshold.toFixed(1);
+          }
+          if (inpDanger) inpDanger.max = (sb.val - 0.5).toFixed(1);
+          if (inpWarm) inpWarm.max = sb.val.toFixed(1);
+
+          // Update Circular Plot live monitor engine
           if (this.circularPlot) {
             this.circularPlot.setRangeScale(sb.val);
+            this.circularPlot.setCustomZones(this.dangerThreshold, this.warmThreshold);
+          }
+          if (this.telemetryTable) {
+            this.telemetryTable.setZoneThresholds(this.dangerThreshold, this.warmThreshold);
           }
 
-          // Adjust numeric threshold constraints to match new range scale
-          if (inpDanger && inpWarm) {
-            inpDanger.max = (sb.val - 0.5).toFixed(1);
-            inpWarm.max = (sb.val - 0.2).toFixed(1);
-            let d = parseFloat(inpDanger.value) || 2.0;
-            let w = parseFloat(inpWarm.value) || 4.0;
-            if (w >= sb.val) {
-              w = parseFloat((sb.val * 0.4).toFixed(1));
-              inpWarm.value = w.toFixed(1);
-            }
-            if (d >= w) {
-              d = parseFloat((w * 0.5).toFixed(1));
-              inpDanger.value = d.toFixed(1);
-            }
-            updatePreviewRings();
-            this.applyThresholds(d, w);
-          }
+          // Redraw preview canvas
+          this.drawZonePreviewCanvas();
+
+          // Sync thresholds to backend
+          this.applyThresholds(this.dangerThreshold, this.warmThreshold);
 
           if (this.sensorControls) {
             this.sensorControls.logTerminal(`Range scale adjusted to ${sb.val}m.`);
@@ -677,17 +835,302 @@ class ViewManager {
           if (this.circularPlot) {
             this.circularPlot[tb.prop] = isActive;
           }
+          this.drawZonePreviewCanvas();
           this.logAudit('SYSTEM', 'DISPLAY LAYERS', `${tb.name} layer ${isActive ? 'enabled' : 'hidden'}`);
         });
       }
     });
+
+    // Initial render of preview canvas
+    setTimeout(() => this.drawZonePreviewCanvas(), 50);
+  }
+
+  drawZonePreviewCanvas() {
+    const canvas = document.getElementById('zonePreviewCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const cx = width / 2;
+    const cy = height / 2;
+    const R = Math.min(width, height) * 0.42;
+
+    ctx.clearRect(0, 0, width, height);
+
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const activeScale = this.activeRangeScale || 10.0;
+    const inpDanger = document.getElementById('inputDangerZoneDirect');
+    const inpWarm = document.getElementById('inputWarmZoneDirect');
+    const d = parseFloat(inpDanger ? inpDanger.value : (this.dangerThreshold || 2.0)) || 2.0;
+    const w = parseFloat(inpWarm ? inpWarm.value : (this.warmThreshold || 4.0)) || 4.0;
+
+    // Display layer states from circularPlot
+    const showFoV = this.circularPlot ? this.circularPlot.showFoV : true;
+    const showSectorBounds = this.circularPlot ? this.circularPlot.showSectorBounds : true;
+    const showVelocity = this.circularPlot ? this.circularPlot.showVelocity : true;
+
+    // Update readouts
+    const labelSafe = document.getElementById('labelSafeThresholdDirect');
+    if (labelSafe) labelSafe.textContent = `> ${w.toFixed(1)} m`;
+
+    const liveReadout = document.getElementById('zonePreviewLiveReadout');
+    if (liveReadout) {
+      liveReadout.textContent = `DANGER: ${d.toFixed(1)}m | WARM: ${w.toFixed(1)}m | SAFE: > ${w.toFixed(1)}m [${activeScale}M]`;
+    }
+
+    // 1. Draw 3 Radar Sector Beams (0°–120° Cyan, 120°–240° Violet, 240°–360° Amber)
+    // Controlled by [±65° FOV] Display Layer toggle
+    const sectors = [
+      { id: 1, start: -90, end: 30, color: '#00E5FF', glow: 'rgba(0, 229, 255, 0.45)', coreColor: '#00E5FF' },
+      { id: 2, start: 30, end: 150, color: '#C45BFF', glow: 'rgba(196, 91, 255, 0.45)', coreColor: '#C45BFF' },
+      { id: 3, start: 150, end: 270, color: '#FFB52E', glow: 'rgba(255, 181, 46, 0.45)', coreColor: '#FFB52E' }
+    ];
+
+    if (showFoV) {
+      sectors.forEach(s => {
+        const a1 = s.start * Math.PI / 180;
+        const a2 = s.end * Math.PI / 180;
+
+        // Radial gradient fill
+        const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, R);
+        if (s.id === 1) {
+          grad.addColorStop(0, 'rgba(0, 229, 255, 0.04)');
+          grad.addColorStop(0.5, 'rgba(0, 160, 230, 0.12)');
+          grad.addColorStop(0.85, 'rgba(0, 100, 210, 0.18)');
+          grad.addColorStop(1.0, 'rgba(0, 229, 255, 0.28)');
+        } else if (s.id === 2) {
+          grad.addColorStop(0, 'rgba(196, 91, 255, 0.04)');
+          grad.addColorStop(0.5, 'rgba(150, 60, 220, 0.12)');
+          grad.addColorStop(0.85, 'rgba(100, 20, 180, 0.18)');
+          grad.addColorStop(1.0, 'rgba(196, 91, 255, 0.28)');
+        } else {
+          grad.addColorStop(0, 'rgba(255, 181, 46, 0.04)');
+          grad.addColorStop(0.5, 'rgba(230, 140, 20, 0.12)');
+          grad.addColorStop(0.85, 'rgba(200, 90, 0, 0.18)');
+          grad.addColorStop(1.0, 'rgba(255, 181, 46, 0.28)');
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, R, a1, a2);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+    }
+
+    // 2. Sector Boundaries & Dividing Spokes
+    // Controlled by [BOUNDARIES] Display Layer toggle
+    if (showSectorBounds) {
+      sectors.forEach(s => {
+        const a1 = s.start * Math.PI / 180;
+        const a2 = s.end * Math.PI / 180;
+
+        // Dividing spoke
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(a1), cy + R * Math.sin(a1));
+        ctx.strokeStyle = s.glow;
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        // Outer boundary glowing arc
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, a1, a2);
+        ctx.strokeStyle = s.glow;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, a1, a2);
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+      });
+    } else {
+      // Draw minimal neutral outer ring if boundaries are hidden
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.strokeStyle = isLight ? 'rgba(148, 163, 184, 0.3)' : 'rgba(75, 95, 130, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // 3. Concentric Distance Rings for Active Range Scale
+    const ringVals = (activeScale === 5) ? [1, 2, 3, 4, 5]
+                   : (activeScale === 15) ? [3, 6, 9, 12, 15]
+                   : [2, 4, 6, 8, 10];
+
+    ringVals.forEach(m => {
+      const rPix = (m / activeScale) * R;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rPix, 0, Math.PI * 2);
+      ctx.strokeStyle = isLight ? 'rgba(148, 163, 184, 0.35)' : 'rgba(75, 95, 130, 0.30)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([2, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Range text at 22°
+      const aRad = (22 - 90) * Math.PI / 180;
+      ctx.font = '600 10px monospace';
+      ctx.fillStyle = isLight ? '#64748B' : '#8A99AD';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${m}m`, cx + rPix * Math.cos(aRad), cy + rPix * Math.sin(aRad));
+    });
+
+    // 4. Degree markings around perimeter
+    const cardinals = [
+      { deg: 0, text: '0° N' },
+      { deg: 90, text: '90° E' },
+      { deg: 180, text: '180° S' },
+      { deg: 270, text: '270° W' }
+    ];
+    cardinals.forEach(c => {
+      const rad = (c.deg - 90) * Math.PI / 180;
+      const tx = cx + (R + 18) * Math.cos(rad);
+      const ty = cy + (R + 18) * Math.sin(rad);
+      ctx.font = '700 10px monospace';
+      ctx.fillStyle = c.deg === 0 ? '#00E5FF' : (isLight ? '#475569' : '#94A3B8');
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(c.text, tx, ty);
+    });
+
+    // 5. Draw WARM Zone (Amber) - Clean ring, NO inner wording badge
+    const rWarmPix = Math.min(R, (w / activeScale) * R);
+    ctx.beginPath();
+    ctx.arc(cx, cy, rWarmPix, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 181, 46, 0.12)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255, 181, 46, 0.35)';
+    ctx.lineWidth = 4.0;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, rWarmPix, 0, Math.PI * 2);
+    ctx.strokeStyle = '#FFB52E';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // 6. Draw DANGER Zone (Red) - Clean ring, NO inner wording badge
+    const rDangerPix = Math.min(R, (d / activeScale) * R);
+    ctx.beginPath();
+    ctx.arc(cx, cy, rDangerPix, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.16)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.35)';
+    ctx.lineWidth = 4.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, rDangerPix, 0, Math.PI * 2);
+    ctx.strokeStyle = '#FF4545';
+    ctx.lineWidth = 2.0;
+    ctx.stroke();
+
+    // 7. Radar Targets & Velocity Vectors Layer
+    // Controlled by [VECTORS] Display Layer toggle
+    const targetsToDraw = (this.circularPlot && this.circularPlot.targets && this.circularPlot.targets.length > 0)
+      ? this.circularPlot.targets
+      : [
+          { id: 1, range: Math.max(0.6, d * 0.75), azimuth: 40, velocity: 1.8, isDynamic: true, color: '#00E5FF' },
+          { id: 2, range: Math.max(d + 0.3, (d + w) / 2), azimuth: 155, velocity: 2.4, isDynamic: true, color: '#C45BFF' },
+          { id: 3, range: Math.min(activeScale - 0.4, (w + activeScale) / 2), azimuth: 285, velocity: 2.8, isDynamic: true, color: '#FFB52E' }
+        ];
+
+    targetsToDraw.forEach(t => {
+      const rM = t.range !== undefined ? t.range : (t.r || 2.0);
+      const az = t.azimuth !== undefined ? t.azimuth : (t.theta || 0);
+      const tPix = (rM / activeScale) * R;
+      const tRad = (az - 90) * Math.PI / 180;
+      const tx = cx + tPix * Math.cos(tRad);
+      const ty = cy + tPix * Math.sin(tRad);
+      const color = t.color || (t.sensor_id === 2 ? '#C45BFF' : (t.sensor_id === 3 ? '#FFB52E' : '#00E5FF'));
+
+      // Velocity Vector Arrow (when VECTORS layer is enabled)
+      if (showVelocity && (t.isDynamic || (t.velocity && t.velocity > 0.2))) {
+        const vel = t.velocity || 2.0;
+        const vLen = Math.min(32, Math.max(16, vel * 10));
+        // Vector pointing slightly outward along heading
+        const hRad = tRad + 0.2;
+        const hx = tx + vLen * Math.cos(hRad);
+        const hy = ty + vLen * Math.sin(hRad);
+
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(hx, hy);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.8;
+        ctx.stroke();
+
+        // Arrowhead
+        const arrowAngle = Math.atan2(hy - ty, hx - tx);
+        const headLen = 6;
+        ctx.beginPath();
+        ctx.moveTo(hx, hy);
+        ctx.lineTo(hx - headLen * Math.cos(arrowAngle - Math.PI / 6), hy - headLen * Math.sin(arrowAngle - Math.PI / 6));
+        ctx.lineTo(hx - headLen * Math.cos(arrowAngle + Math.PI / 6), hy - headLen * Math.sin(arrowAngle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
+
+      // Target Marker: Circular marker with glowing core
+      ctx.beginPath();
+      ctx.arc(tx, ty, 5, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    });
+
+    // 8. Center Hub & Crosshair
+    ctx.beginPath();
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#00E5FF';
+    ctx.fill();
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
   }
 
   syncZoneInputs() {
     const inpDanger = document.getElementById('inputDangerZoneDirect');
     const inpWarm = document.getElementById('inputWarmZoneDirect');
-    if (inpDanger && this.dangerThreshold) inpDanger.value = this.dangerThreshold.toFixed(1);
-    if (inpWarm && this.warmThreshold) inpWarm.value = this.warmThreshold.toFixed(1);
+    if (inpDanger && this.dangerThreshold !== undefined) {
+      inpDanger.value = this.dangerThreshold.toFixed(1);
+    }
+    if (inpWarm && this.warmThreshold !== undefined) {
+      inpWarm.value = this.warmThreshold.toFixed(1);
+    }
+
+    const scaleBtns = [
+      { id: 'btnDirectScale5m', val: 5 },
+      { id: 'btnDirectScale10m', val: 10 },
+      { id: 'btnDirectScale15m', val: 15 }
+    ];
+    scaleBtns.forEach(sb => {
+      const el = document.getElementById(sb.id);
+      if (el) {
+        if (sb.val === (this.activeRangeScale || 10)) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      }
+    });
+
+    // Sync Display Layer button states
+    const fovBtn = document.getElementById('btnDirectToolFov');
+    if (fovBtn) fovBtn.classList.toggle('active', this.circularPlot ? !!this.circularPlot.showFoV : true);
+    const velBtn = document.getElementById('btnDirectToolVel');
+    if (velBtn) velBtn.classList.toggle('active', this.circularPlot ? !!this.circularPlot.showVelocity : true);
+    const boundsBtn = document.getElementById('btnDirectToolBounds');
+    if (boundsBtn) boundsBtn.classList.toggle('active', this.circularPlot ? !!this.circularPlot.showSectorBounds : true);
+
+    this.drawZonePreviewCanvas();
   }
 
   async applyThresholds(dangerMeters, warmMeters) {

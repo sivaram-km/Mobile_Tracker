@@ -481,31 +481,6 @@ class CircularPlot {
         ctx.lineWidth = (isSelected && this.selectedRadar !== 'all') ? 2.0 : 1.4;
         ctx.stroke();
 
-        // Sector Orientation Label with Protective Pill Knockout
-        const midRad = (s.midDeg - 90) * (Math.PI / 180);
-        const labelR = r * 0.86;
-        const lx = this.cx + labelR * Math.cos(midRad);
-        const ly = this.cy + labelR * Math.sin(midRad);
-
-        ctx.font = (isSelected && this.selectedRadar !== 'all') ? '800 10px var(--font-mono)' : '700 9px var(--font-mono)';
-        const textWidth = ctx.measureText(s.label).width;
-        const pillW = textWidth + 12;
-        const pillH = 17;
-
-        // Draw subtle pill background so concentric rings never cut through
-        ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.94)' : 'rgba(7, 11, 20, 0.94)';
-        ctx.beginPath();
-        ctx.roundRect(lx - pillW / 2, ly - pillH / 2, pillW, pillH, 3);
-        ctx.fill();
-        ctx.strokeStyle = isDimmed ? 'rgba(125, 133, 144, 0.2)' : s.coreColor;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        ctx.fillStyle = isDimmed ? 'rgba(125, 133, 144, 0.4)' : s.coreColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(s.label, lx, ly + 0.5);
-
         ctx.restore();
       }
     });
@@ -659,75 +634,6 @@ class CircularPlot {
       ctx.textBaseline = 'middle';
       ctx.fillText(text, pos.x, pos.y + 0.5);
     });
-
-    // 2. Position Zone indicator badges along decoupled radial axes (0 collisions with Range markings or Sector labels!)
-    const pillBg = this.theme === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(7, 11, 20, 0.95)';
-
-    // DANGER Zone Badge (#FF4545) along 45° Northeast axis
-    const dangerPos = this.polarToCanvas(this.dangerRadius, 45);
-    const dangerText = `DANGER ${this.dangerRadius.toFixed(1)}m`;
-    ctx.font = '700 8.5px var(--font-mono)';
-    const dtw = ctx.measureText(dangerText).width;
-    const dpw = dtw + 8;
-    const dph = 14;
-
-    ctx.fillStyle = pillBg;
-    ctx.beginPath();
-    ctx.roundRect(dangerPos.x - dpw / 2, dangerPos.y - dph / 2, dpw, dph, 2);
-    ctx.fill();
-    ctx.strokeStyle = '#FF4545';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = '#FF4545';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(dangerText, dangerPos.x, dangerPos.y + 0.5);
-
-    // WARM Zone Badge (#FFB52E) along 135° Southeast axis
-    const warnPos = this.polarToCanvas(this.warningRadius, 135);
-    const warnText = `WARM ${this.warningRadius.toFixed(1)}m`;
-    ctx.font = '700 8.5px var(--font-mono)';
-    const wtw = ctx.measureText(warnText).width;
-    const wpw = wtw + 8;
-    const wph = 14;
-
-    ctx.fillStyle = pillBg;
-    ctx.beginPath();
-    ctx.roundRect(warnPos.x - wpw / 2, warnPos.y - wph / 2, wpw, wph, 2);
-    ctx.fill();
-    ctx.strokeStyle = '#FFB52E';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = '#FFB52E';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(warnText, warnPos.x, warnPos.y + 0.5);
-
-    // SAFE Zone Badge (#22C55E) along 225° Southwest axis
-    const safeRadius = (this.warningRadius + this.maxRange) / 2;
-    if (this.maxRange - this.warningRadius >= 0.8) {
-      const safePos = this.polarToCanvas(safeRadius, 225);
-      const safeText = 'SAFE';
-      ctx.font = '700 8.5px var(--font-mono)';
-      const stw = ctx.measureText(safeText).width;
-      const spw = stw + 8;
-      const sph = 14;
-
-      ctx.fillStyle = pillBg;
-      ctx.beginPath();
-      ctx.roundRect(safePos.x - spw / 2, safePos.y - sph / 2, spw, sph, 2);
-      ctx.fill();
-      ctx.strokeStyle = '#22C55E';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.fillStyle = '#22C55E';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(safeText, safePos.x, safePos.y + 0.5);
-    }
   }
 
   drawBoresight() {

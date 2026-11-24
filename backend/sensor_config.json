@@ -2,16 +2,16 @@
   "sensor1": {
     "cli_port": "/dev/ttyUSB0",
     "data_port": "/dev/ttyUSB1",
-    "config": "AOP_6m_default.cfg"
+    "config": "Mobile_Tracker_6843_ISK.cfg"
   },
   "sensor2": {
     "cli_port": "/dev/ttyUSB2",
     "data_port": "/dev/ttyUSB3",
-    "config": "AOP_6m_default.cfg"
+    "config": "Mobile_Tracker_6843_ISK.cfg"
   },
   "sensor3": {
     "cli_port": "/dev/ttyUSB4",
     "data_port": "/dev/ttyUSB5",
-    "config": "AOP_6m_default.cfg"
+    "config": "Mobile_Tracker_6843_ISK.cfg"
   }
 }
