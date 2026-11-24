@@ -588,7 +588,7 @@ class ViewManager {
         } catch (e) {
           console.warn('Broadcast config error:', e);
         } finally {
-          btnBcastCfg.textContent = '⚡ APPLY CFG TO ALL 3 RADARS';
+          btnBcastCfg.textContent = 'APPLY CFG TO ALL 3 RADARS';
         }
       });
     }
@@ -661,7 +661,7 @@ class ViewManager {
           const curVal = el.value;
           el.innerHTML = allPortOptions.map(p => {
             const isDetected = usbPorts.includes(p);
-            return `<option value="${p}">${isDetected ? '⚡ ' + p + ' (Detected)' : p}</option>`;
+            return `<option value="${p}">${isDetected ? p + ' (Detected)' : p}</option>`;
           }).join('');
 
           if (curVal && allPortOptions.includes(curVal)) {
@@ -959,8 +959,8 @@ class ViewManager {
 
     // 3. Concentric Distance Rings for Active Range Scale
     const ringVals = (activeScale === 5) ? [1, 2, 3, 4, 5]
-                   : (activeScale === 15) ? [3, 6, 9, 12, 15]
-                   : [2, 4, 6, 8, 10];
+      : (activeScale === 15) ? [3, 6, 9, 12, 15]
+        : [2, 4, 6, 8, 10];
 
     ringVals.forEach(m => {
       const rPix = (m / activeScale) * R;
@@ -1034,10 +1034,10 @@ class ViewManager {
     const targetsToDraw = (this.circularPlot && this.circularPlot.targets && this.circularPlot.targets.length > 0)
       ? this.circularPlot.targets
       : [
-          { id: 1, range: Math.max(0.6, d * 0.75), azimuth: 40, velocity: 1.8, isDynamic: true, color: '#00E5FF' },
-          { id: 2, range: Math.max(d + 0.3, (d + w) / 2), azimuth: 155, velocity: 2.4, isDynamic: true, color: '#C45BFF' },
-          { id: 3, range: Math.min(activeScale - 0.4, (w + activeScale) / 2), azimuth: 285, velocity: 2.8, isDynamic: true, color: '#FFB52E' }
-        ];
+        { id: 1, range: Math.max(0.6, d * 0.75), azimuth: 40, velocity: 1.8, isDynamic: true, color: '#00E5FF' },
+        { id: 2, range: Math.max(d + 0.3, (d + w) / 2), azimuth: 155, velocity: 2.4, isDynamic: true, color: '#C45BFF' },
+        { id: 3, range: Math.min(activeScale - 0.4, (w + activeScale) / 2), azimuth: 285, velocity: 2.8, isDynamic: true, color: '#FFB52E' }
+      ];
 
     targetsToDraw.forEach(t => {
       const rM = t.range !== undefined ? t.range : (t.r || 2.0);

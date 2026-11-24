@@ -14,7 +14,6 @@ if __name__ == "__main__":
     print("  Local Server:    http://localhost:8000")
     print("  WebSocket Feed:  ws://localhost:8000/ws/telemetry")
     print("  Architecture:    Python Backend + Pure HTML/Canvas Frontend")
-    print("  (Zero Node.js / Zero npm build steps)")
     print("=======================================================\n")
     
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False, app_dir=os.path.join(current_dir, "backend"))
